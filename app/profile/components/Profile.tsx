@@ -1,8 +1,21 @@
 "use client";
 import React, { useState } from "react";
 import { VscEdit, VscSave } from "react-icons/vsc";
+import UserService from "@/lib/user";
+interface ProfileProps {
+  userInfo: {
+    fullname?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    [key: string]: any;
+  } | null;
+}
 
-const Profile: React.FC = () => {
+const Profile: React.FC<ProfileProps> = ({ userInfo }) => {
+  if (!userInfo) {
+    return <div>Loading user information...</div>;
+  }
   const [personalInfo, setPersonalInfo] = useState({
     name: "John Doe",
     email: "johndoe@example.com",

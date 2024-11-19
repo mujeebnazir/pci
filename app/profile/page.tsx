@@ -1,11 +1,25 @@
+import React, { useEffect, useState } from "react";
 import Profile from "./components/Profile";
 import Order from "./components/order";
-import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VscAccount, VscGift } from "react-icons/vsc";
-const page = () => {
+import useAuthStore from "@/zustand/authStore";
+
+const Page = () => {
+  const authStore = useAuthStore();
+  const [userInfo, setUserInfo] = useState<object | null>(null);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const user = await authStore.checkUserStatus();
+      setUserInfo(user);
+    };
+
+    fetchUserInfo();
+  }, [authStore]);
+
   return (
-    <div className=" m-10 w-[80%] h-[95%]  pt-10 mt-20 flex items-center justify-center">
+    <div className="m-10 w-[80%] h-[95%] pt-10 mt-20 flex items-center justify-center">
       <Tabs defaultValue="account" className="w-[400px]">
         <TabsList>
           <TabsTrigger value="account">
@@ -20,7 +34,7 @@ const page = () => {
           value="account"
           className="w-full flex items-center justify-center py-5"
         >
-          <Profile />
+          <Profile userInfo={userInfo} />
         </TabsContent>
         <TabsContent value="password">
           <Order />
@@ -30,4 +44,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

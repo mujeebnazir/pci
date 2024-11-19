@@ -1,7 +1,7 @@
 import client from "@/utils/appwrite";
-import { Databases, ID } from "appwrite";
+import {  Databases, ID } from "appwrite";
 
-// Replace with your Appwrite database and collection IDs
+
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
 const PRODUCT_COLLECTION_ID =
   process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_PRODUCT ?? "";
@@ -11,7 +11,7 @@ interface Product {
   name: string;
   description: string;
   price: number;
-  categoryId: string;
+  categoryName: string;
   imageUrl: string[];
   createdAt?: string;
 }
@@ -66,7 +66,7 @@ class ProductService {
         name: document.name,
         description: document.description,
         price: document.price,
-        categoryId: document.categoryId,
+        categoryName: document.categoryId,
         imageUrl: document.imageUrl,
         createdAt: document.createdAt,
       }));
