@@ -1,5 +1,5 @@
 import client from "@/utils/appwrite";
-import { Account, Databases, ID } from "appwrite";
+import { Databases, ID } from "appwrite";
 
 // Replace with your Appwrite database and collection IDs
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
@@ -17,11 +17,9 @@ interface Product {
 }
 
 class ProductService {
-  private account: Account;
   private databases: Databases;
 
   constructor() {
-    this.account = new Account(client);
     this.databases = new Databases(client);
   }
 
