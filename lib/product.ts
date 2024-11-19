@@ -2,8 +2,9 @@ import client from "@/utils/appwrite";
 import { Account, Databases, ID } from "appwrite";
 
 // Replace with your Appwrite database and collection IDs
-const DATABASE_ID = "your_database_id";
-const PRODUCT_COLLECTION_ID = "your_product_collection_id";
+const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
+const PRODUCT_COLLECTION_ID =
+  process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_PRODUCT ?? "";
 
 interface Product {
   id?: string;
@@ -11,7 +12,7 @@ interface Product {
   description: string;
   price: number;
   categoryId: string;
-  imageUrl: string;
+  imageUrl: string[];
   createdAt?: string;
 }
 
@@ -62,7 +63,15 @@ class ProductService {
         PRODUCT_COLLECTION_ID,
         query
       );
-      return response.documents as Product[];
+      return response.documents.map((document) => ({
+        id: document.$id,
+        name: document.name,
+        description: document.description,
+        price: document.price,
+        categoryId: document.categoryId,
+        imageUrl: document.imageUrl,
+        createdAt: document.createdAt,
+      }));
     } catch (error) {
       throw new Error("Error fetching products");
     }

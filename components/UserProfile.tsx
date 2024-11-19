@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { GoGear, GoPerson, GoSignIn, GoSignOut } from "react-icons/go";
 import useAuthStore from "@/zustand/authStore";
@@ -47,7 +48,7 @@ const UserProfile = () => {
           <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
             <li>
               <Link
-                href="#"
+                href="/profile"
                 className="flex flex-row items-center space-x-6 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
               >
                 <GoPerson size={20} />
