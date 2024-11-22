@@ -1,23 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Profile from "./components/Profile";
 import Order from "./components/order";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VscAccount, VscGift } from "react-icons/vsc";
-import useAuthStore from "@/zustand/authStore";
 
 const Page = () => {
-  const authStore = useAuthStore();
-  const [userInfo, setUserInfo] = useState<object | null>(null);
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      const user = await authStore.checkUserStatus();
-      setUserInfo(user);
-    };
-
-    fetchUserInfo();
-  }, [authStore]);
-
   return (
     <div className="m-10 w-[80%] h-[95%] pt-10 mt-20 flex items-center justify-center">
       <Tabs defaultValue="account" className="w-[400px]">
@@ -34,7 +21,7 @@ const Page = () => {
           value="account"
           className="w-full flex items-center justify-center py-5"
         >
-          <Profile userInfo={userInfo} />
+          <Profile />
         </TabsContent>
         <TabsContent value="password">
           <Order />

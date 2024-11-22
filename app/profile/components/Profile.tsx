@@ -1,31 +1,59 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { VscEdit, VscSave } from "react-icons/vsc";
 import UserService from "@/lib/user";
-interface ProfileProps {
-  userInfo: {
-    fullname?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    [key: string]: any;
-  } | null;
+import toast from "react-hot-toast";
+import useAuthStore from "@/zustand/authStore";
+interface UserInfo {
+  fullname: string;
+  email: string;
+  address: string;
+  phone: string;
 }
 
-const Profile: React.FC<ProfileProps> = ({ userInfo }) => {
-  if (!userInfo) {
-    return <div>Loading user information...</div>;
-  }
-  const [personalInfo, setPersonalInfo] = useState({
-    name: "John Doe",
-    email: "johndoe@example.com",
-    address: "123 Main Street, Cityville",
-    number: "+123456789",
+const Profile: React.FC = () => {
+  const authStore = useAuthStore();
+  const [personalInfo, setPersonalInfo] = useState<UserInfo>({
+    fullname: "",
+    email: "",
+    address: "",
+    phone: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleEdit = () => {
+  useEffect(() => {
+    (async () => {
+      const user: any = await authStore.checkUserStatus();
+      if (user) {
+        setPersonalInfo({
+          fullname: user.fullname ?? "",
+          email: user.email ?? "",
+          address: user.address ?? "",
+          phone: user.phone ?? "",
+        });
+      }
+    })();
+  }, []);
+
+  const handleEdit = async () => {
+    if (isEditing) {
+      setIsSaving(true);
+      try {
+        const response = await UserService.updateProfile(
+          personalInfo.fullname,
+          personalInfo.phone,
+          personalInfo.address
+        );
+        toast.success("Profile updated successfully.");
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred while updating your profile.");
+      } finally {
+        setIsSaving(false);
+      }
+    }
     setIsEditing((prev) => !prev);
   };
 
@@ -40,10 +68,13 @@ const Profile: React.FC<ProfileProps> = ({ userInfo }) => {
         <h2 className="text-2xl font-semibold text-gray-800">Personal Info</h2>
         <button
           onClick={handleEdit}
-          className="p-1  scale-100 hover:scale-110 bg-black text-white text-sm rounded-md hover:bg-gray-700 focus:outline-none"
+          disabled={isSaving}
+          className={`p-1 scale-100 hover:scale-110 bg-black text-white text-sm rounded-md hover:bg-gray-700 focus:outline-none ${
+            isSaving ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           {isEditing ? (
-            <VscSave size={26} className="self-center " />
+            <VscSave size={26} className="self-center" />
           ) : (
             <VscEdit size={26} className="self-center" />
           )}
@@ -56,13 +87,13 @@ const Profile: React.FC<ProfileProps> = ({ userInfo }) => {
           </label>
           <input
             type="text"
-            name="name"
-            value={personalInfo.name}
+            name="fullname"
+            value={personalInfo.fullname}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`mt-1 block w-full p-2  ${
-              isEditing ? " border border-gray-300" : "text-lg font-semibold"
-            } rounded-md bg-white `}
+            className={`mt-1 block w-full p-2 ${
+              isEditing ? "border border-gray-300" : "text-lg font-semibold"
+            } rounded-md bg-white`}
           />
         </div>
         <div>
@@ -72,12 +103,9 @@ const Profile: React.FC<ProfileProps> = ({ userInfo }) => {
           <input
             type="email"
             name="email"
-            value={personalInfo.email}
-            onChange={handleChange}
-            disabled={!isEditing}
-            className={`mt-1 block w-full p-2  ${
-              isEditing ? " border border-gray-300" : "text-lg font-semibold"
-            } rounded-md bg-white `}
+            defaultValue={personalInfo.email}
+            disabled={true}
+            className="mt-1 block w-full p-2 text-lg font-semibold rounded-md bg-white"
           />
         </div>
         <div>
@@ -90,9 +118,9 @@ const Profile: React.FC<ProfileProps> = ({ userInfo }) => {
             value={personalInfo.address}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`mt-1 block w-full p-2  ${
-              isEditing ? " border border-gray-300" : "text-lg font-semibold"
-            } rounded-md bg-white `}
+            className={`mt-1 block w-full p-2 ${
+              isEditing ? "border border-gray-300" : "text-lg font-semibold"
+            } rounded-md bg-white`}
           />
         </div>
         <div>
@@ -101,13 +129,13 @@ const Profile: React.FC<ProfileProps> = ({ userInfo }) => {
           </label>
           <input
             type="tel"
-            name="number"
-            value={personalInfo.number}
+            name="phone"
+            value={personalInfo.phone}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`mt-1 block w-full p-2  ${
-              isEditing ? " border border-gray-300" : "text-lg font-semibold"
-            } rounded-md bg-white `}
+            className={`mt-1 block w-full p-2 ${
+              isEditing ? "border border-gray-300" : "text-lg font-semibold"
+            } rounded-md bg-white`}
           />
         </div>
       </div>
