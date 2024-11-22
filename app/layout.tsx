@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
@@ -32,16 +32,12 @@ export default function RootLayout({
 }>) {
   const location = usePathname();
 
-  const noLayoutRoutes = [
-    "/admin",
-    "/admin/*",
- 
-  ];
+  const noLayoutRoutes = ["/admin", "/admin/*"];
   const shouldRenderLayout = !noLayoutRoutes.some((route) =>
     location.startsWith(route)
   );
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -53,16 +49,16 @@ export default function RootLayout({
           </div>
 
           {children}
-          {
-            shouldRenderLayout && <Footer
-            socialLinks={{
-              instagram: "https://instagram.com/yourpage",
-              facebook: "https://facebook.com/yourpage",
-              youtube: "https://youtube.com/yourpage",
-              pinterest: "https://pinterest.com/yourpage",
-            }}
-          />
-          }
+          {shouldRenderLayout && (
+            <Footer
+              socialLinks={{
+                instagram: "https://instagram.com/yourpage",
+                facebook: "https://facebook.com/yourpage",
+                youtube: "https://youtube.com/yourpage",
+                pinterest: "https://pinterest.com/yourpage",
+              }}
+            />
+          )}
         </div>
       </body>
     </html>

@@ -29,8 +29,10 @@ const useAuthStore = create<AuthState>((set) => ({
 
   signIn: async (email: string, password: string) => {
     const success = await AuthService.signIn(email, password);
+
     if (success) {
       const user = await AuthService.getCurrentUser();
+
       set({ isLoggedIn: true, session: user });
     } else {
       set({ isLoggedIn: false, session: null });

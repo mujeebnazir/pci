@@ -1,70 +1,63 @@
 import client from "@/utils/appwrite";
-import { Account, Databases, ID } from "appwrite";
+import { Databases } from "appwrite";
 import AuthService from "./auth";
-const DATABASE_ID = "your_database_id";
-const COLLECTION_ID = "your_collection_id";
 
 class UserService {
-  private user: any;
   private databases: Databases;
 
   constructor() {
-    this.user = AuthService.getCurrentUser();
     this.databases = new Databases(client);
   }
 
-  async getProfile() {
-    try {
-      const user = this.user;
-      const profile = await this.databases.getDocument(
-        DATABASE_ID,
-        COLLECTION_ID,
-        user.$id
-      );
-      return { ...user, ...profile };
-    } catch (error) {
-      throw new Error("Could not retrieve profile");
+  private async getCurrentUser() {
+    const user = await AuthService.getCurrentUser();
+    if (!user) {
+      throw new Error("User not authenticated");
     }
+    return user;
   }
 
-  async updateProfile(
-    name: string,
-    email: string,
-    phone: string,
-    address: string
-  ) {
+  async updateProfile(fullname?: string, phone?: string, address?: string) {
     try {
-      const user = this.user;
+      const user = await this.getCurrentUser();
 
-      // Update the custom collection document
-      await this.databases.updateDocument(
-        DATABASE_ID,
-        COLLECTION_ID,
+      const response = await this.databases.updateDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID as string,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_USER as string,
         user.$id,
         {
-          name,
-          email,
+          fullname,
           phone,
           address,
         }
       );
 
-      return { name, email, phone, address };
+      return response; // Return the updated document if needed
     } catch (error) {
+      console.error("Error updating profile:", error);
       throw new Error("Profile update failed");
     }
   }
 
+  /**
+   * Delete the user profile
+   */
   async deleteProfile() {
     try {
-      const user = this.user;
+      const user = await this.getCurrentUser();
 
-      await this.databases.deleteDocument(DATABASE_ID, COLLECTION_ID, user.$id);
+      await this.databases.deleteDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID as string,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_USER as string,
+        user.$id
+      );
 
-      await this.user.deleteSession("current");
+      // Delete the current session
+      await AuthService.logout();
 
       return true;
     } catch (error) {
+      console.error("Error deleting profile:", error);
       throw new Error("Profile deletion failed");
     }
   }

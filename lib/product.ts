@@ -27,12 +27,10 @@ interface Product {
 
 
 class ProductService {
-  private account: Account;
   private databases: Databases;
   private storage: Storage;
 
   constructor() {
-    this.account = new Account(client);
     this.databases = new Databases(client);
     this.storage = new Storage(client);
   }

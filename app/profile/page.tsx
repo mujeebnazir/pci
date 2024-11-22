@@ -1,11 +1,12 @@
+import React from "react";
 import Profile from "./components/Profile";
 import Order from "./components/order";
-import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VscAccount, VscGift } from "react-icons/vsc";
-const page = () => {
+
+const Page = () => {
   return (
-    <div className=" m-10 w-[80%] h-[95%]  pt-10 mt-20 flex items-center justify-center">
+    <div className="m-10 w-[80%] h-[95%] pt-10 mt-20 flex items-center justify-center">
       <Tabs defaultValue="account" className="w-[400px]">
         <TabsList>
           <TabsTrigger value="account">
@@ -30,4 +31,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
