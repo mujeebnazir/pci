@@ -17,28 +17,28 @@ export function AppSidebar({ children }: any) {
   const links = [
     {
       label: "Dashboard",
-      href: "/admin/dashboard",
+      href: "/admin-dashboard",
       icon: (
         <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Create Product",
-      href: "/admin/dashboard/create-product",
+      href: "/admin-dashboard/create-product",
       icon: (
         <IconFilePlus className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "Update Product",
-      href: "/admin/dashboard/update-product",
+      href: "/admin-dashboard/update-product",
       icon: (
         <IconEdit className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {
       label: "View Orders",
-      href: "/admin/dashboard/orders",
+      href: "/admin-dashboard/orders",
       icon: (
         <IconTruckDelivery className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
@@ -123,27 +123,27 @@ export const LogoIcon = () => {
 // Dummy dashboard component with content
 const Dashboard = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex flex-1">
-      <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-        <div className="flex gap-2">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={"first-array" + index}
-              className="h-20 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"
-            ></div>
-          ))}
+    <div className="flex flex-1 h-screen  ">
+  <div className="p-2  h-screen md:p-4 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full">
+    {/* <div className="flex gap-2">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div
+          key={"first-array" + index}
+          className="h-16 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"
+        ></div>
+      ))}
+    </div> */}
+    <div className="flex gap-2 flex-1 h-full overflow-y-auto">
+      {Array.from({ length: 1 }).map((_, index) => (
+        <div
+          key={"second-array" + index}
+          className="w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse h-full"
+        >
+          <div className="h-full">{children}</div>
         </div>
-        <div className="flex gap-2 flex-1">
-          {Array.from({ length: 2 }).map((_, index) => (
-            <div
-              key={"second-array" + index}
-              className="h-full w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"
-            >
-              {children}
-            </div>
-          ))}
-        </div>
-      </div>
+      ))}
     </div>
+  </div>
+</div>
   );
 };
