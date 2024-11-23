@@ -89,3 +89,13 @@
     background-color: transparent;
   }
 }
+
+/* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.hide-scrollbar {
+  scrollbar-width: none;  /* Firefox */
+}
