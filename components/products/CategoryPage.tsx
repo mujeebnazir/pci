@@ -1,13 +1,12 @@
 import React from "react";
 import FiltersSidebar from "./FiltersSidesbar";
-import ProductList from "./ProductList";
 import Products from "../Products";
 
 type Product = {
   id: string;
   name: string;
   description: string;
-  image: string;
+  images: string[];
   price: number;
   discountedPrice: number;
   rating: number;

@@ -6,11 +6,19 @@ import toast from "react-hot-toast";
 import AuthService from "@/lib/auth";
 import useAuthModel from "@/hooks/useAuthModel";
 import useAuthStore from "@/zustand/authStore";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
 type Product = {
   id: string;
   name: string;
   description: string;
-  image: string;
+  images: string[];
   price: number;
   discountedPrice?: number;
   rating: number;
@@ -33,9 +41,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const addToCart = useCartStore((state) => state.addItem);
 
   const handleClick = () => {
-    router.push(`/product/${product.id}`);
+    router.push(`/product/${product?.id}`);
   };
-
+ console.log("product" , product)
   const handleAddToCart = async (e: React.MouseEvent) => {
     const user = await checkUserStatus();
     if (!user) {
@@ -56,12 +64,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       onClick={handleClick}
     >
       <div className="relative h-[65vh] my-2 w-full max-w-xs overflow-hidden bg-white rounded-md shadow-lg transition-all duration-300 hover:shadow-xl">
-        <img
-          className="h-full w-full object-cover transition-transform duration-500 ease-in-out transform group-hover:scale-110"
-          src={product.image}
-          alt={product.name}
-          loading="lazy"
-        />
+        <Carousel>
+          <CarouselContent>
+            {product?.images?.map((image, index) => (
+              <CarouselItem key={index}>
+                <div className="p-1">
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={image}
+                      alt={`${product.name} - ${index + 1}`}
+                      className="h-full w-full object-cover transition-transform duration-500 ease-in-out transform group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
 
         <button className="absolute w-full bottom-0 left-1/2 transform -translate-x-1/2 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 bg-black px-5 py-2 text-center text-sm font-semibold text-white hover:bg-gray-700">
           Quick View

@@ -1,10 +1,11 @@
 "use client";
 import Showcase from "@/components/Showcase";
-import { Categories } from "@/components/Categories";
 import HeroContent from "@/components/HeroContent";
 import Products from "@/components/Products";
-import { products, features } from "@/constants";
+import {  features } from "@/constants";
+import useProducts from "@/hooks/useProducts";
 export default function Home() {
+  const { products } = useProducts({});
   const images = [
     { src: "/images/i1.webp", alt: "Product 1" },
     { src: "/images/i2.webp", alt: "Product 2" },
