@@ -2,7 +2,7 @@ import React from "react";
 import { useCartStore } from "../../zustand/cart";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 type CartItemData = {
-  id: string;
+  $id: string;
   name: string;
   image: string;
   price: number;
@@ -43,21 +43,21 @@ const CartItem: React.FC<CartItemProps> = ({
       </div>
       <div className="flex items-center space-x-2 bg-slate-400 rounded-2xl shadow px-4 py-2">
         <button
-          onClick={() => decreaseQuantity(item.id)}
+          onClick={() => decreaseQuantity(item.$id)}
           className="px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-400 transition"
         >
           -
         </button>
         <span>{item.quantity}</span>
         <button
-          onClick={() => increaseQuantity(item.id)}
+          onClick={() => increaseQuantity(item.$id)}
           className="px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-400 transition"
         >
           +
         </button>
       </div>
       <button
-        onClick={() => removeCartItem(item.id)}
+        onClick={() => removeCartItem(item.$id)}
         className="text-red-500 ml-4 hover:text-red-800 transition"
       >
         <MdOutlineRemoveShoppingCart size={24} />

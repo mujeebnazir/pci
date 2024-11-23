@@ -202,7 +202,7 @@ const CreateProduct = () => {
               <div>
                 <Label htmlFor="category">Category</Label>
                 <Select
-                  onValueChange={(value) =>
+                  onValueChange={(value: any) =>
                     handleChange({ target: { name: "category", value } } as any)
                   }
                 >
@@ -214,7 +214,7 @@ const CreateProduct = () => {
                       <SelectLabel>Categories</SelectLabel>
                       {categories && categories.length > 0 ? (
                         categories.map((category) => (
-                          <SelectItem key={category.$id} value={category.$id} >
+                          <SelectItem key={category.$id} value={category.$id}>
                             {category.name}
                           </SelectItem>
                         ))

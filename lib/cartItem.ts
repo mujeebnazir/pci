@@ -1,11 +1,18 @@
+//cartItem.ts
 import client from "@/utils/appwrite";
 import { Databases, ID, Query } from "appwrite";
 import AuthService from "./auth";
 
+interface Product {
+  $id: string;
+  name: string;
+  price: number;
+}
+
 interface CartItem {
-  id?: string;
+  $id?: string;
   cartId: string;
-  product: object;
+  product: Product;
   quantity: number;
 }
 
@@ -17,7 +24,7 @@ class CartItemService {
 
     if (
       !process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ||
-      !process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEMS
+      !process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM
     ) {
       throw new Error("Missing Appwrite environment variables");
     }
@@ -31,26 +38,25 @@ class CartItemService {
     return user;
   }
 
-  async addCartItem(
-    product: CartItem["product"],
-    quantity: number = 1
-  ): Promise<boolean> {
+  async addCartItem(product: Product, quantity: number = 1): Promise<boolean> {
     try {
       const user = await this.getCurrentUser();
+      console.log("user", user);
       await this.databases.createDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEMS!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
         ID.unique(),
         {
           cartId: user.cartId,
-          product,
           quantity,
+          product,
         }
       );
       return true;
     } catch (error: any) {
       console.error("Error adding cart item:", error.message);
-      throw new Error("Error adding cart item");
+
+      return false;
     }
   }
 
@@ -59,7 +65,7 @@ class CartItemService {
       await this.getCurrentUser();
       await this.databases.updateDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEMS!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
         id,
         { quantity }
       );
@@ -74,7 +80,7 @@ class CartItemService {
     try {
       await this.databases.deleteDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEMS!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
         id
       );
       return true;
@@ -89,7 +95,7 @@ class CartItemService {
       const user = await this.getCurrentUser();
       const response = await this.databases.listDocuments(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEMS!,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
         [Query.equal("cartId", user.cartId)]
       );
       return response.documents.map((document) => ({
