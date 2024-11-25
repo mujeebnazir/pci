@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import ModelProvider from "@/providers/ModelProvider";
 import { usePathname } from "next/navigation";
+import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -49,6 +50,12 @@ export default function RootLayout({
           </div>
 
           {children}
+          <ProgressBar
+            height="5px"
+            color="#000000"
+            options={{ showSpinner: false }}
+            shallowRouting
+          />
           {shouldRenderLayout && (
             <Footer
               socialLinks={{

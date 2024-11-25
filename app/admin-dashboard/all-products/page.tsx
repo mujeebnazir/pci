@@ -1,9 +1,11 @@
+"use client";
+import AllProducts from '@/components/admin/products/allProducts/main'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-      <h1>I am update product page</h1>
+      <AllProducts/>
     </div>
   )
 }

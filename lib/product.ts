@@ -107,6 +107,9 @@ class ProductService {
    * @param productId Product document ID
    */
   async deleteProduct(productId: string) {
+    if (!productId) {
+      throw new Error("Product id is required");
+    }
     try {
       await this.databases.deleteDocument(
         DATABASE_ID,
@@ -164,10 +167,11 @@ class ProductService {
         PRODUCT_COLLECTION_ID,
         id
       );
-      console.log("response from apppwrite", response)
+      console.log("response from apppwrite", response);
       const images = await response.images.map((imageId: string) =>
-        this.storage.getFileView(BUCKET_ID, imageId))
-      return {...response, images};
+        this.storage.getFileView(BUCKET_ID, imageId)
+      );
+      return { ...response, images };
     } catch (error) {
       console.error("Error fetching product:", error);
       return Promise.reject(error);
