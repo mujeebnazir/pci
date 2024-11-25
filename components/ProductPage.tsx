@@ -1,23 +1,25 @@
 "use client";
 import React, { useState } from "react";
-import { FaStar, FaChevronDown } from "react-icons/fa";
-import Products from "./Products";
-import { products } from "@/constants";
+import { FaStar } from "react-icons/fa";
+import ProductDetailsKashmiri from "./ProductDetails";
 
-// Define types for product and review data
-interface ProductImage {
-  src: string;
-  alt: string;
+enum Size {
+  L = "L",
+  M = "M",
+  SM = "SM",
+  XL = "XL",
+  XXL = "XXL",
 }
-
 interface Product {
-  id: number;
-  title: string;
+  id?: string;
+  name: string;
+  description: string;
   price: number;
-  discountPrice: number;
-  rating: number;
-  reviewsCount: number;
-  images: ProductImage[];
+  sizesAvailable: Size[];
+  itemsCount: number;
+  category?: string;
+  images?: string[];
+  createdAt?: string;
 }
 
 interface Review {
@@ -33,20 +35,6 @@ interface RecommendedProduct {
   image: string;
 }
 
-const product: Product = {
-  id: 1,
-  title: "One Life Graphic T-shirt",
-  price: 300,
-  discountPrice: 260,
-  rating: 4.5,
-  reviewsCount: 451,
-  images: [
-    { src: "/path/to/image1.jpg", alt: "Product Image 1" },
-    { src: "/path/to/image2.jpg", alt: "Product Image 2" },
-    { src: "/path/to/image3.jpg", alt: "Product Image 3" },
-  ],
-};
-
 const reviews: Review[] = [
   { id: 1, reviewerName: "Alice", rating: 5, comment: "Great quality!" },
   { id: 2, reviewerName: "Bob", rating: 4, comment: "Very comfortable." },
@@ -57,36 +45,37 @@ const reviews: Review[] = [
 ];
 
 // ProductPage Component
-const ProductPage: React.FC = () => {
+const ProductPage: React.FC<{ product: Product }> = ({ product }) => {
   return (
-    <div className=" mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col lg:flex-row space-x-6 py-8">
-        <ProductGallery images={product.images} />
-        <ProductInfo product={product} />
-      </div>
-      <div className="w-full mx-auto">
-        <Tabs />
-        <RecommendedProducts />
+    <div className=" mx-auto px-4 sm:px-6 lg:px-8   h-screen overflow-hidden ">
+      <div className="flex flex-col lg:flex-row space-x-6 py-8  h-full">
+        <div className="w-full lg:w-[45%] h-full  p-4">
+          <ProductGallery images={product?.images || []} />
+        </div>
+
+        <div className="w-full lg:w-1/2  p-4 overflow-y-auto h-full  hide-scrollbar">
+          <ProductInfo product={product} />
+        </div>
       </div>
     </div>
   );
 };
 
 interface ProductGalleryProps {
-  images: ProductImage[];
+  images: string[];
 }
 
 const ProductGallery: React.FC<ProductGalleryProps> = ({ images }) => {
   const [selectedImage, setSelectedImage] = useState<number>(0);
 
   return (
-    <div className="flex flex-row items-center justify-center space-x-3  w-[45%]">
-      <div className="flex flex-col space-y-3">
+    <div className="flex flex-row  justify-center space-x-3  w-full  h-[100vh] sticky">
+      <div className="flex flex-col my-12">
         {images.map((img, index) => (
           <img
             key={index}
-            src={img.src}
-            alt={img.alt}
+            src={img}
+            alt={img}
             onClick={() => setSelectedImage(index)}
             className={`w-20 h-20 cursor-pointer ${
               index === selectedImage ? "border-2 border-blue-500" : "border"
@@ -94,11 +83,11 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images }) => {
           />
         ))}
       </div>
-      <div>
+      <div className="my-12">
         <img
-          src={images[selectedImage].src}
-          alt={images[selectedImage].alt}
-          className="w-96 h-96 border border-gray-300"
+          src={images[selectedImage]}
+          alt={images[selectedImage]}
+          className="w-[30vw] h-[80vh] border border-gray-300 rounded-md shadow-md"
         />
       </div>
     </div>
@@ -112,73 +101,46 @@ interface ProductInfoProps {
 
 const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
   const [quantity, setQuantity] = useState<number>(1);
-
   const increaseQuantity = () => setQuantity(quantity + 1);
   const decreaseQuantity = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
+  const [select, setSelect] = useState<string>(product.sizesAvailable[0]);
 
   return (
-    <div className="flex flex-col space-y-2 pt-10 w-[45%] overflow-auto">
-      <h2 className="text-3xl font-semibold">{product.title}</h2>
+    <div className="flex flex-col space-y-2 pt-10 w-full overflow-auto ">
+      <h2 className="text-3xl font-semibold">{product.name}</h2>
       <div className="flex items-center text-black">
-        <FaStar className="mr-1" color="#FFC107" /> {product.rating}/
+        <FaStar className="mr-1" color="#FFC107" /> 4.5/
         <span className="text-gray-500">5</span>
       </div>
       <p className="text-2xl font-semibold text-black">
-        ${product.discountPrice}{" "}
-        <span className="line-through text-gray-500">${product.price}</span>
+        ₹{(product.price - (product.price * 10) / 100).toFixed(2)}{" "}
+        <span className="line-through text-gray-500">₹{product.price}</span>
         <span className="ml-2 px-1 text-sm bg-orange-900 text-orange-900 text-opacity-100 bg-opacity-10 rounded-lg">
-          -
-          {Math.round(
-            ((product.price - product.discountPrice) / product.price) * 100
-          )}
-          %
+          -10% {/* Display fixed 10% discount */}
         </span>
       </p>
       <p className="text-lg font-normal text-gray-600 text-wrap break-words line-clamp-2 active:line-clamp-none  overflow-hidden ">
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos suscipit
-        aut, exercitationem inventore ducimus nisi blanditiis odio. Porro et
-        quaerat, est saepe officiis minus suscipit, aliquam dignissimos in
-        beatae nulla.
+        {product.description}
       </p>
       <hr className="" />
-      <div className="flex flex-col space-y-2">
-        <span className="font-normal text-sm text-black">Colours</span>
-        <div className="flex flex-row space-x-2">
-          <div className="w-20 h-9 bg-red-500 border border-black"></div>
-          <div className="w-20 h-9 bg-blue-500 border"></div>
-          <div className="w-20 h-9 bg-green-500 border"></div>
-        </div>
-      </div>
 
       <div className="flex flex-col space-y-2">
         <span className="font-normal text-sm text-black">Size</span>
         <div className="flex flex-row space-x-2">
-          <div className="w-20 h-9 border flex justify-center items-center border-black">
-            L
-          </div>
-          <div className="w-20 h-9 border flex justify-center items-center ">
-            M
-          </div>
-          <div className="w-20 h-9 border flex justify-center items-center ">
-            S
-          </div>
-          <div className="w-20 h-9 border flex justify-center items-center ">
-            XL
-          </div>
+          {product.sizesAvailable.map((size, index) => (
+            <div
+              onClick={() => setSelect(size)}
+              key={index}
+              className={`w-20 h-9 border flex justify-center items-center ${
+                select === size ? "bg-black text-white" : ""
+              }`}
+            >
+              {size}
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="flex flex-col space-y-2">
-        <span className="font-normal text-sm text-black">Gender</span>
-        <div className="flex flex-row space-x-2">
-          <div className="w-20 h-9 border flex justify-center items-center border-black">
-            Male
-          </div>
-          <div className="w-20 h-9 border flex justify-center items-center ">
-            Female
-          </div>
-        </div>
-      </div>
       <hr className="" />
       <div className="flex items-center space-x-4 pt-4">
         <div className="flex items-center justify-center space-x-4 border px-6 py-1">
@@ -195,6 +157,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
           Add to Cart
         </button>
       </div>
+      <Tabs />
     </div>
   );
 };
@@ -246,16 +209,13 @@ const Tabs: React.FC = () => {
 };
 
 // ProductDetails Component
-const ProductDetails: React.FC = () => (
-  <div className="p-4 mx-auto w-[90%]">
-    <p className="text-lg font-normal text-gray-700 text-wrap break-words line-clamp-2 active:line-clamp-none  overflow-hidden">
-      This graphic t-shirt is perfect for any occasion... Lorem ipsum dolor sit
-      amet consectetur adipisicing elit. Velit, in delectus. Quidem perspiciatis
-      voluptatum ipsum eius amet dignissimos ex consectetur beatae laborum
-      tempore magni in illo odio optio, veniam pariatur!
-    </p>
-  </div>
-);
+const ProductDetails: React.FC = () => {
+  return (
+    <div className="p-4 mx-auto w-[90%]">
+      <ProductDetailsKashmiri />
+    </div>
+  );
+};
 
 // Reviews Component
 interface ReviewsProps {
@@ -298,11 +258,11 @@ const Reviews: React.FC<ReviewsProps> = ({ reviews }) => {
 };
 
 // RecommendedProducts Component
-const RecommendedProducts: React.FC = () => (
-  <div className="mt-8 flex flex-col">
-    <h3 className="text-2xl font-semibold self-center">You might also like</h3>
-    <Products products={products} />
-  </div>
-);
+// const RecommendedProducts: React.FC = () => (
+//   <div className="mt-8 flex flex-col">
+//     <h3 className="text-2xl font-semibold self-center">You might also like</h3>
+//     <Products products={products} />
+//   </div>
+// );
 
 export default ProductPage;

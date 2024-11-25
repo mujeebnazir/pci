@@ -2,31 +2,38 @@
 import { create } from "zustand";
 import CartItemService from "@/lib/cartItem";
 
-interface Product {
-  $id: string;
+type Product = {
+  $id: string; // Add this property
+  id: string;
   name: string;
   price: number;
-}
-interface CartItem {
-  $id?: string;
-  product: Product;
+  description: string;
+  category: string;
+  sizesAvailable: string[]; // Ensure this matches
+  images: string[]; // Add this property
+};
+
+type CartItemData = {
+  id?: string;
+  cartId?: string;
+  product: Product; // This must match the updated `Product` type
   quantity: number;
-}
+};
 
 interface CartState {
-  totalAmount: number;
-  items: CartItem[];
-  itemsCount: number;
-  totalMRP: number;
-  discountOnMRP: number;
-  deliveryFee: number;
-  isLoading: boolean;
-  error: string | null;
-  initializeCart: () => Promise<void>;
-  addItem: (item: CartItem) => Promise<void>;
-  removeItem: (id: string) => Promise<void>;
-  onIncrease: (id: string) => Promise<void>;
-  onDecrease: (id: string) => Promise<void>;
+  totalAmount: number; // Total amount after discounts and additional fees
+  items: CartItemData[]; // Array of items in the cart
+  itemsCount: number; // Total number of items in the cart
+  totalMRP: number; // Total MRP (Maximum Retail Price) of all items
+  discountOnMRP: number; // Total discount applied on MRP
+  deliveryFee: number; // Delivery fee for the cart
+  isLoading: boolean; // Loading state of the cart
+  error: string | null; // Error message if any operation fails
+  initializeCart: () => Promise<void>; // Method to initialize the cart
+  addItem: (item: CartItemData) => Promise<void>; // Method to add an item to the cart
+  removeItem: (id: string) => Promise<void>; // Method to remove an item by product ID
+  onIncrease: (id: string) => Promise<void>; // Method to increase the quantity of a cart item
+  onDecrease: (id: string) => Promise<void>; // Method to decrease the quantity of a cart item
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -35,7 +42,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   itemsCount: 0,
   totalMRP: 0,
   discountOnMRP: 0,
-  deliveryFee: 5,
+  deliveryFee: 30,
   isLoading: false,
   error: null,
 
@@ -44,23 +51,45 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const items = await CartItemService.getCartItems();
+      console.log("items from cart", items);
+
+      if (!items || !Array.isArray(items)) {
+        throw new Error("Failed to load cart items.");
+      }
       const totalMRP = items.reduce(
-        (sum, item) => sum + (item.product as Product).price * item.quantity,
+        (sum, item) => sum + (item.product.price as number) * item.quantity,
         0
       );
-      const discountOnMRP = totalMRP * 0.2; // 20% discount
-      const totalAmount = totalMRP - discountOnMRP + get().deliveryFee;
+      const discountOnMRP = Math.round(totalMRP * 0.2); // 20% discount
+      const deliveryFee = get().deliveryFee;
+      const totalAmount = totalMRP - discountOnMRP + deliveryFee;
+      const cartItemsData: CartItemData[] = items.map((item) => ({
+        ...item,
+        cartId: item.cartId,
+        product: {
+          $id: item.product.$id, // Ensure this property exists in `item.product`
+          id: item.product.$id, // Map correctly to match the `Product` type
+          name: item.product.name,
+          price: item.product.price,
+          description: (item.product as any).description || "", // Default value if missing
+          category: (item.product as any).category || "", // Default value if missing
+          sizesAvailable: (item.product as any).sizesAvailable || [], // Default value if missing
+          images: item.product.images || [], // Add this property, providing a default if missing
+        },
+        quantity: item.quantity,
+      }));
 
       set({
-        items,
+        items: cartItemsData, // Update the cart items
         totalMRP,
         discountOnMRP,
         totalAmount,
-        itemsCount: items.length,
+        itemsCount: cartItemsData.length,
         isLoading: false,
       });
     } catch (error: any) {
-      set({ error: error.message, isLoading: false });
+      console.error("Error initializing cart:", error);
+      set({ error: error.message || "Unknown error", isLoading: false });
     }
   },
 
@@ -101,7 +130,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       set({ isLoading: true, error: null });
       const success = await CartItemService.removeCartItem(id);
       if (success) {
-        const updatedItems = get().items.filter((item) => item.$id !== id);
+        const updatedItems = get().items.filter((item) => item.id !== id);
         const totalMRP = updatedItems.reduce(
           (sum, item) => sum + (item.product.price as number) * item.quantity,
           0
@@ -127,7 +156,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   onIncrease: async (id) => {
     try {
       set({ isLoading: true, error: null });
-      const item = get().items.find((item) => item.$id === id);
+      const item = get().items.find((item) => item.id === id);
       if (!item) throw new Error("Item not found");
 
       const success = await CartItemService.updateCartItem(
@@ -136,7 +165,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       );
       if (success) {
         const updatedItems = get().items.map((item) =>
-          item.$id === id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
         );
         const totalMRP = updatedItems.reduce(
           (sum, item) => sum + (item.product.price as number) * item.quantity,
@@ -162,7 +191,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   onDecrease: async (id) => {
     try {
       set({ isLoading: true, error: null });
-      const item = get().items.find((item) => item.$id === id);
+      const item = get().items.find((item) => item.id === id);
       if (!item || item.quantity <= 1) throw new Error("Invalid quantity");
 
       const success = await CartItemService.updateCartItem(
@@ -171,7 +200,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       );
       if (success) {
         const updatedItems = get().items.map((item) =>
-          item.$id === id ? { ...item, quantity: item.quantity - 1 } : item
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
         );
         const totalMRP = updatedItems.reduce(
           (sum, item) => sum + (item.product.price as number) * item.quantity,

@@ -1,30 +1,33 @@
 //cartItem.ts
 import client from "@/utils/appwrite";
-import { Databases, ID, Query } from "appwrite";
+import { Databases, ID, Query, Storage } from "appwrite";
 import AuthService from "./auth";
 
 interface Product {
   $id: string;
   name: string;
+  images: string[];
   price: number;
 }
 
 interface CartItem {
   $id?: string;
-  cartId: string;
+  cartId?: string;
   product: Product;
   quantity: number;
 }
 
 class CartItemService {
   private databases: Databases;
+  private storage: Storage;
 
   constructor() {
     this.databases = new Databases(client);
-
+    this.storage = new Storage(client);
     if (
       !process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ||
-      !process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM
+      !process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM ||
+      !process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID
     ) {
       throw new Error("Missing Appwrite environment variables");
     }
@@ -38,25 +41,24 @@ class CartItemService {
     return user;
   }
 
-  async addCartItem(product: Product, quantity: number = 1): Promise<boolean> {
+  async addCartItem(product: Product, quantity: number = 1): Promise<object> {
     try {
       const user = await this.getCurrentUser();
       console.log("user", user);
-      await this.databases.createDocument(
+      const cartItem = await this.databases.createDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
         process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
         ID.unique(),
         {
-          cartId: user.cartId,
+          cart: user.cartId,
           quantity,
-          product,
+          product: product.$id,
         }
       );
-      return true;
+      return cartItem;
     } catch (error: any) {
       console.error("Error adding cart item:", error.message);
-
-      return false;
+      throw new Error("Error adding cart item");
     }
   }
 
@@ -76,14 +78,14 @@ class CartItemService {
     }
   }
 
-  async removeCartItem(id: string): Promise<boolean> {
+  async removeCartItem($id: string): Promise<object> {
     try {
-      await this.databases.deleteDocument(
+      const response = await this.databases.deleteDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
         process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
-        id
+        $id
       );
-      return true;
+      return response;
     } catch (error: any) {
       console.error("Error removing cart item:", error.message);
       throw new Error("Error removing cart item");
@@ -96,12 +98,21 @@ class CartItemService {
       const response = await this.databases.listDocuments(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
         process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
-        [Query.equal("cartId", user.cartId)]
+        [Query.equal("cart", user.cartId)]
       );
+
       return response.documents.map((document) => ({
         id: document.$id,
-        cartId: document.cartId,
-        product: document.product,
+        cartId: document.cart,
+        product: {
+          ...document.product,
+          images: document.product.images.map((imageId: string) =>
+            this.storage.getFileView(
+              process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID!,
+              imageId
+            )
+          ),
+        },
         quantity: document.quantity,
       })) as CartItem[];
     } catch (error: any) {

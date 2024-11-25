@@ -1,18 +1,27 @@
 import React from "react";
 import { useCartStore } from "../../zustand/cart";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
-type CartItemData = {
-  $id: string;
-  name: string;
-  image: string;
-  price: number;
-  size?: string;
-  color?: string;
-  quantity: number;
-};
+import toast from "react-hot-toast";
+
+interface Product {
+  $id: string; // Unique identifier for the product
+  name: string; // Name of the product
+  description: string; // Product description
+  images: string[]; // Array of image identifiers
+  price: number; // Price of the product
+  category: string; // Product category
+  sizesAvailable: string[]; // Array of available sizes
+}
+
+interface CartItem {
+  id?: string; // Optional unique identifier
+  cartId?: string; // Optional cart identifier
+  product: Product; // Associated product object
+  quantity: number; // Quantity of the product in the cart
+}
 
 type CartItemProps = {
-  item: CartItemData;
+  item: CartItem;
   onRemove: (id: string) => void;
   onIncrease: (id: string) => void;
   onDecrease: (id: string) => void;
@@ -20,44 +29,44 @@ type CartItemProps = {
 
 const CartItem: React.FC<CartItemProps> = ({
   item,
-  onRemove,
-  onIncrease,
   onDecrease,
+  onIncrease,
+  onRemove,
 }) => {
-  const removeCartItem = useCartStore((state) => state.removeItem);
-  const increaseQuantity = useCartStore((state) => state.onIncrease);
-  const decreaseQuantity = useCartStore((state) => state.onDecrease);
-
+  const handleRemoveItem = async () => {
+    onRemove(item.id as string);
+    toast.success("Product removed from cart");
+  };
   return (
     <div className="flex items-center justify-between p-4 border border-gray-300 rounded-lg shadow-md">
       <img
-        src={item.image}
-        alt={item.name}
+        src={item.product.images[0]} // Replace with actual placeholder
+        alt={item.product.name}
         className="w-20 h-20 object-cover rounded"
       />
       <div className="flex-1 px-4">
-        <h4 className="text-lg font-semibold">{item.name}</h4>
-        <p className="text-sm text-gray-500">Size: {item.size}</p>
-        <p className="text-sm text-gray-500">Color: {item.color}</p>
-        <p className="text-md font-semibold">${item.price}</p>
+        <h4 className="text-lg font-semibold">{item.product.name}</h4>
+        <p className="text-sm text-gray-500">Size: {""}</p>
+        <p className="text-sm text-gray-500">Color: {"item.color"}</p>
+        <p className="text-md font-semibold">${item.product.price}</p>
       </div>
       <div className="flex items-center space-x-2 bg-slate-400 rounded-2xl shadow px-4 py-2">
         <button
-          onClick={() => decreaseQuantity(item.$id)}
+          onClick={() => onDecrease(item.id || "")}
           className="px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-400 transition"
         >
           -
         </button>
         <span>{item.quantity}</span>
         <button
-          onClick={() => increaseQuantity(item.$id)}
+          onClick={() => onIncrease(item.id || "")}
           className="px-2 py-1 bg-gray-200 rounded-full hover:bg-gray-400 transition"
         >
           +
         </button>
       </div>
       <button
-        onClick={() => removeCartItem(item.$id)}
+        onClick={handleRemoveItem}
         className="text-red-500 ml-4 hover:text-red-800 transition"
       >
         <MdOutlineRemoveShoppingCart size={24} />

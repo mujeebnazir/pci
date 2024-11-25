@@ -1,68 +1,20 @@
-import React, { useState, useEffect } from "react";
+"use client";
+import React from "react";
 import CartItem from "./CartItem";
 import OrderSummary from "./OrderSummary";
 import { useCartStore } from "../../zustand/cart";
 
-type CartItemData = {
-  $id: string;
-  name: string;
-  image: string;
-  price: number;
-  size: string;
-  color: string;
-  quantity: number;
-};
-
-type CartPageProps = {
-  applyPromoCode?: () => void;
-  onRemove: (id: string) => void;
-  onIncrease: (id: string) => void;
-  onDecrease: (id: string) => void;
-};
-
-const CartPage: React.FC<CartPageProps> = ({
-  applyPromoCode,
-  onRemove,
-  onIncrease,
-  onDecrease,
-}) => {
-  const [items, setItems] = useState<CartItemData[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
+const CartPage: React.FC = ({}) => {
   const {
+    items,
+    onDecrease,
+    onIncrease,
+    removeItem,
+    totalAmount,
     totalMRP,
     discountOnMRP,
     deliveryFee,
-    totalAmount,
-    isLoading,
-    initializeCart,
-  } = useCartStore((state) => ({
-    totalMRP: state.totalMRP,
-    discountOnMRP: state.discountOnMRP,
-    deliveryFee: state.deliveryFee,
-    totalAmount: state.totalAmount,
-    isLoading: state.isLoading,
-    initializeCart: state.initializeCart,
-  }));
-
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const cartItems = await initializeCart();
-      } catch (err: any) {
-        setError(err.message);
-      }
-    };
-    fetchCart();
-  }, [initializeCart]);
-
-  if (isLoading) {
-    return <p className="text-center text-gray-500">Loading your cart...</p>;
-  }
-
-  if (error) {
-    return <p className="text-center text-red-500">{error}</p>;
-  }
+  } = useCartStore((state) => state);
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6 w-[80%] mx-auto">
@@ -72,15 +24,15 @@ const CartPage: React.FC<CartPageProps> = ({
         <p className="text-gray-500 text-sm mb-2">
           Total Items: <span className="font-semibold">{items.length}</span>
         </p>
-        <div className="space-y-4 max-h-[35vh] overflow-y-auto">
+        <div className="space-y-4 max-h-[35vh] overflow-y-auto hide-scrollbar">
           {items.length > 0 ? (
             items.map((item) => (
               <CartItem
-                key={item.$id} // Use unique identifier
+                key={item.id}
                 item={item}
-                onRemove={onRemove}
-                onIncrease={onIncrease}
-                onDecrease={onDecrease}
+                onRemove={() => removeItem(item.id || "")}
+                onIncrease={() => onIncrease(item.id || "")}
+                onDecrease={() => onDecrease(item.id || "")}
               />
             ))
           ) : (
@@ -98,7 +50,6 @@ const CartPage: React.FC<CartPageProps> = ({
           discountOnMRP={discountOnMRP}
           deliveryFee={deliveryFee}
           totalAmount={totalAmount}
-          applyPromoCode={applyPromoCode ?? (() => {})}
         />
       </div>
     </div>
