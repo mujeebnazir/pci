@@ -2,10 +2,26 @@
 import Showcase from "@/components/Showcase";
 import HeroContent from "@/components/HeroContent";
 import Products from "@/components/Products";
-import {  features } from "@/constants";
+import { features } from "@/constants";
 import useProducts from "@/hooks/useProducts";
+import { useCartStore } from "@/zustand/cart";
+import { useEffect } from "react";
 export default function Home() {
   const { products } = useProducts({});
+  const store = useCartStore((state) => state);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        await store.initializeCart();
+      } catch (err: any) {
+        console.error("Error initializing cart:", err);
+        throw new Error("Error initializing cart");
+      }
+    };
+
+    fetchCart();
+  }, []);
   const images = [
     { src: "/images/i1.webp", alt: "Product 1" },
     { src: "/images/i2.webp", alt: "Product 2" },

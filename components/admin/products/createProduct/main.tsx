@@ -202,7 +202,7 @@ const CreateProduct = () => {
               <div>
                 <Label htmlFor="category">Category</Label>
                 <Select
-                  onValueChange={(value) =>
+                  onValueChange={(value: any) =>
                     handleChange({ target: { name: "category", value } } as any)
                   }
                 >

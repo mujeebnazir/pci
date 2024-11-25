@@ -1,134 +1,224 @@
+//store.ts
 import { create } from "zustand";
+import CartItemService from "@/lib/cartItem";
 
-interface CartItem {
+type Product = {
+  $id: string; // Add this property
   id: string;
   name: string;
-  images: string[];
   price: number;
-  size: string;
-  color: string;
+  description: string;
+  category: string;
+  sizesAvailable: string[]; // Ensure this matches
+  images: string[]; // Add this property
+};
+
+type CartItemData = {
+  id?: string;
+  cartId?: string;
+  product: Product; // This must match the updated `Product` type
   quantity: number;
-}
+};
 
 interface CartState {
-  totalAmount: number;
-  items: CartItem[];
-  itemsCount: number;
-  totalMRP: number;
-  discountOnMRP: number;
-  deliveryFee: number;
-  addItem: (item: CartItem) => void;
-  removeItem: (id: string) => void;
-  onIncrease: (id: string) => void;
-  onDecrease: (id: string) => void;
+  totalAmount: number; // Total amount after discounts and additional fees
+  items: CartItemData[]; // Array of items in the cart
+  itemsCount: number; // Total number of items in the cart
+  totalMRP: number; // Total MRP (Maximum Retail Price) of all items
+  discountOnMRP: number; // Total discount applied on MRP
+  deliveryFee: number; // Delivery fee for the cart
+  isLoading: boolean; // Loading state of the cart
+  error: string | null; // Error message if any operation fails
+  initializeCart: () => Promise<void>; // Method to initialize the cart
+  addItem: (item: CartItemData) => Promise<void>; // Method to add an item to the cart
+  removeItem: (id: string) => Promise<void>; // Method to remove an item by product ID
+  onIncrease: (id: string) => Promise<void>; // Method to increase the quantity of a cart item
+  onDecrease: (id: string) => Promise<void>; // Method to decrease the quantity of a cart item
 }
 
-export const useCartStore = create<CartState>((set) => ({
+export const useCartStore = create<CartState>((set, get) => ({
   totalAmount: 0,
   items: [],
   itemsCount: 0,
   totalMRP: 0,
   discountOnMRP: 0,
-  deliveryFee: 5,
+  deliveryFee: 30,
+  isLoading: false,
+  error: null,
 
-  addItem: (item) => {
-    set((state) => ({
-      totalMRP: state.totalMRP + item.price,
-      discountOnMRP: state.discountOnMRP + item.price * 0.2,
-      totalAmount:
-        state.totalMRP +
-        item.price -
-        (state.discountOnMRP + item.price * 0.2) +
-        state.deliveryFee,
-      items: [...state.items, item],
-      itemsCount: state.itemsCount + 1,
-    }));
-  },
+  // **Initialize Cart**
+  initializeCart: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      const items = await CartItemService.getCartItems();
+      console.log("items from cart", items);
 
-  removeItem: (id) => {
-    set((state) => {
-      const itemIndex = state.items.findIndex((item) => item.id === id);
-      if (itemIndex === -1) return state; // Return if item not found
-
-      const item = state.items[itemIndex];
-      const itemTotalPrice = item.price * item.quantity;
-      const itemDiscount = itemTotalPrice * 0.2; // 20% discount
-
-      // Calculate new totals after removing the item
-      const newTotalMRP = state.totalMRP - itemTotalPrice;
-      const newDiscountOnMRP = state.discountOnMRP - itemDiscount;
-      const newTotalAmount = newTotalMRP - newDiscountOnMRP + state.deliveryFee;
-
-      return {
-        totalMRP: newTotalMRP,
-        discountOnMRP: newDiscountOnMRP,
-        totalAmount: newTotalAmount,
-        items: [
-          ...state.items.slice(0, itemIndex),
-          ...state.items.slice(itemIndex + 1),
-        ],
-        itemsCount: state.itemsCount - 1,
-      };
-    });
-  },
-
-  onIncrease: (id) =>
-    set((state) => {
-      const updatedItems = state.items.map((item) => {
-        if (item.id === id) {
-          const newQuantity = item.quantity + 1;
-          return { ...item, quantity: newQuantity };
-        }
-        return item;
-      });
-
-      const totalMRP = updatedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
+      if (!items || !Array.isArray(items)) {
+        throw new Error("Failed to load cart items.");
+      }
+      const totalMRP = items.reduce(
+        (sum, item) => sum + (item.product.price as number) * item.quantity,
         0
       );
+      const discountOnMRP = Math.round(totalMRP * 0.2); // 20% discount
+      const deliveryFee = get().deliveryFee;
+      const totalAmount = totalMRP - discountOnMRP + deliveryFee;
+      const cartItemsData: CartItemData[] = items.map((item) => ({
+        ...item,
+        cartId: item.cartId,
+        product: {
+          $id: item.product.$id, // Ensure this property exists in `item.product`
+          id: item.product.$id, // Map correctly to match the `Product` type
+          name: item.product.name,
+          price: item.product.price,
+          description: (item.product as any).description || "", // Default value if missing
+          category: (item.product as any).category || "", // Default value if missing
+          sizesAvailable: (item.product as any).sizesAvailable || [], // Default value if missing
+          images: item.product.images || [], // Add this property, providing a default if missing
+        },
+        quantity: item.quantity,
+      }));
 
-      const discountOnMRP = updatedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity * 0.2,
-        0
-      );
-
-      const totalAmount = totalMRP - discountOnMRP + state.deliveryFee;
-
-      return {
-        items: updatedItems,
+      set({
+        items: cartItemsData, // Update the cart items
         totalMRP,
         discountOnMRP,
         totalAmount,
-      };
-    }),
-
-  onDecrease: (id) =>
-    set((state) => {
-      const updatedItems = state.items.map((item) => {
-        if (item.id === id && item.quantity > 1) {
-          const newQuantity = item.quantity - 1;
-          return { ...item, quantity: newQuantity };
-        }
-        return item;
+        itemsCount: cartItemsData.length,
+        isLoading: false,
       });
+    } catch (error: any) {
+      console.error("Error initializing cart:", error);
+      set({ error: error.message || "Unknown error", isLoading: false });
+    }
+  },
 
-      const totalMRP = updatedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
+  // **Add Item**
+  addItem: async (item) => {
+    try {
+      set({ isLoading: true, error: null });
+      const success = await CartItemService.addCartItem(
+        item.product,
+        item.quantity
       );
+      if (success) {
+        const updatedItems = [...get().items, item];
+        const totalMRP = updatedItems.reduce(
+          (sum, item) => sum + (item.product.price as number) * item.quantity,
+          0
+        );
+        const discountOnMRP = totalMRP * 0.2;
+        const totalAmount = totalMRP - discountOnMRP + get().deliveryFee;
 
-      const discountOnMRP = updatedItems.reduce(
-        (sum, item) => sum + item.price * item.quantity * 0.2,
-        0
+        set({
+          items: updatedItems,
+          totalMRP,
+          discountOnMRP,
+          totalAmount,
+          itemsCount: updatedItems.length,
+          isLoading: false,
+        });
+      }
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
+  // **Remove Item**
+  removeItem: async (id) => {
+    try {
+      set({ isLoading: true, error: null });
+      const success = await CartItemService.removeCartItem(id);
+      if (success) {
+        const updatedItems = get().items.filter((item) => item.id !== id);
+        const totalMRP = updatedItems.reduce(
+          (sum, item) => sum + (item.product.price as number) * item.quantity,
+          0
+        );
+        const discountOnMRP = totalMRP * 0.2;
+        const totalAmount = totalMRP - discountOnMRP + get().deliveryFee;
+
+        set({
+          items: updatedItems,
+          totalMRP,
+          discountOnMRP,
+          totalAmount,
+          itemsCount: updatedItems.length,
+          isLoading: false,
+        });
+      }
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
+  // **Increase Quantity**
+  onIncrease: async (id) => {
+    try {
+      set({ isLoading: true, error: null });
+      const item = get().items.find((item) => item.id === id);
+      if (!item) throw new Error("Item not found");
+
+      const success = await CartItemService.updateCartItem(
+        item.quantity + 1,
+        id
       );
+      if (success) {
+        const updatedItems = get().items.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+        const totalMRP = updatedItems.reduce(
+          (sum, item) => sum + (item.product.price as number) * item.quantity,
+          0
+        );
+        const discountOnMRP = totalMRP * 0.2;
+        const totalAmount = totalMRP - discountOnMRP + get().deliveryFee;
 
-      const totalAmount = totalMRP - discountOnMRP + state.deliveryFee;
+        set({
+          items: updatedItems,
+          totalMRP,
+          discountOnMRP,
+          totalAmount,
+          isLoading: false,
+        });
+      }
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
 
-      return {
-        items: updatedItems,
-        totalMRP,
-        discountOnMRP,
-        totalAmount,
-      };
-    }),
+  // **Decrease Quantity**
+  onDecrease: async (id) => {
+    try {
+      set({ isLoading: true, error: null });
+      const item = get().items.find((item) => item.id === id);
+      if (!item || item.quantity <= 1) throw new Error("Invalid quantity");
+
+      const success = await CartItemService.updateCartItem(
+        item.quantity - 1,
+        id
+      );
+      if (success) {
+        const updatedItems = get().items.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+        );
+        const totalMRP = updatedItems.reduce(
+          (sum, item) => sum + (item.product.price as number) * item.quantity,
+          0
+        );
+        const discountOnMRP = totalMRP * 0.2;
+        const totalAmount = totalMRP - discountOnMRP + get().deliveryFee;
+
+        set({
+          items: updatedItems,
+          totalMRP,
+          discountOnMRP,
+          totalAmount,
+          isLoading: false,
+        });
+      }
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
 }));

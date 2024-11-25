@@ -15,19 +15,14 @@ import {
 } from "@/components/ui/carousel";
 
 type Product = {
+  $id: string; // Add this property
   id: string;
   name: string;
-  description: string;
-  images: string[];
   price: number;
-  discountedPrice?: number;
-  rating: number;
-  isOnSale: boolean;
-  size?: string;
-  color?: string;
-  quantity?: number;
-  category?: string;
-  subcategory?: string;
+  description: string;
+  category: string;
+  sizesAvailable: string[]; // Ensure this matches
+  images: string[]; // Add this property
 };
 
 type ProductCardProps = {
@@ -43,27 +38,37 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleClick = () => {
     router.push(`/product/${product?.id}`);
   };
- console.log("product" , product)
+  console.log("product", product);
   const handleAddToCart = async (e: React.MouseEvent) => {
     const user = await checkUserStatus();
     if (!user) {
       toast.error("Please login to add items to cart");
       return authModel.onOpen();
     }
-    addToCart({
-      ...product,
-      size: product.size || "",
-      color: product.color || "",
-      quantity: product.quantity || 1,
-    });
+
+    const cartitem = {
+      product: {
+        ...product,
+        $id: product.id,
+        category: product.category,
+        sizesAvailable: product.sizesAvailable,
+      },
+      quantity: 1,
+    };
+    try {
+      await addToCart(cartitem);
+      toast.success("Item added to cart");
+    } catch (error) {
+      toast.error("Error adding item to cart");
+    }
   };
 
   return (
-    <div
-      className="group flex flex-col items-center justify-center cursor-pointer transition transform hover:scale-105"
-      onClick={handleClick}
-    >
-      <div className="relative h-[65vh] my-2 w-full max-w-xs overflow-hidden bg-white rounded-md shadow-lg transition-all duration-300 hover:shadow-xl">
+    <div className="group flex flex-col items-center justify-center cursor-pointer transition transform hover:scale-105">
+      <div
+        onClick={handleClick}
+        className="relative h-[65vh] my-2 w-full max-w-xs overflow-hidden bg-white rounded-md shadow-lg transition-all duration-300 hover:shadow-xl"
+      >
         <Carousel>
           <CarouselContent>
             {product?.images?.map((image, index) => (
@@ -105,9 +110,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           From
           <span className="text-lg font-normal text-black">
             {" "}
-            ${product.discountedPrice ?? product.price}
+            ${product.price ?? product.price}
           </span>
-          {product.discountedPrice && (
+          {product.price && (
             <span className="ml-2 text-sm text-gray-500 line-through">
               ${product.price}
             </span>
