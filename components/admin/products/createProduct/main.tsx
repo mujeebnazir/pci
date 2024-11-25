@@ -161,14 +161,14 @@ const CreateProduct = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-slate-200 to-slate-300 min-h-screen flex items-center justify-center p-3 rounded-lg ">
-      <div className="bg-white shadow-xl rounded-lg flex flex-col lg:flex-row w-full  overflow-hidden">
+    <div className="bg-white  flex items-center justify-center rounded-lg ">
+      <div className="bg-white shadow-xl rounded-lg flex flex-col gap-2 lg:flex-row w-full  overflow-hidden">
         {/* Product Form */}
-        <div className="flex flex-col lg:w-2/3 p-6 md:p-10 border-r border-gray-200">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-            Create Your Product
+        <div className="flex flex-col lg:w-2/3 p-2 border-r border-gray-200">
+          <h1 className="text-3xl font-bold text-gray-800 mb-3 text-center">
+            Create & Live Your Product 
           </h1>
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-2" onSubmit={handleSubmit}>
             <div>
               <Label htmlFor="name">Product Name</Label>
               <Input
@@ -185,7 +185,7 @@ const CreateProduct = () => {
                 value={productData.description}
                 onChange={handleChange}
                 placeholder="Enter product description"
-                rows={4}
+                rows={3}
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -287,7 +287,7 @@ const CreateProduct = () => {
         </div>
 
         {/* Category Form */}
-        <div className="flex flex-col lg:w-1/3 p-3 bg-gray-100">
+        <div className="flex flex-col lg:w-1/3 ">
           <CreateCategory />
         </div>
       </div>

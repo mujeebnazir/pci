@@ -71,9 +71,9 @@ const CreateCategory = () => {
   }, []);
 
   return (
-    <div className="p-6 max-w-6xl bg-white shadow-lg rounded-lg overflow-y-auto max-h-[100vh]">
+    <div className="p-9 max-w-6xl bg-white shadow-lg rounded-lg overflow-y-auto max-h-[100vh]">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-        Create Category
+        Create New Category
       </h2>
       <form onSubmit={handleCategoryCreation} className="mb-4">
         <Label htmlFor="categoryName">Category Name</Label>

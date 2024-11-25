@@ -30,8 +30,8 @@ export function AppSidebar({ children }: any) {
       ),
     },
     {
-      label: "Update Product",
-      href: "/admin-dashboard/update-product",
+      label: "Manage Products",
+      href: "/admin-dashboard/all-products",
       icon: (
         <IconEdit className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
@@ -95,7 +95,7 @@ export function AppSidebar({ children }: any) {
 export const Logo = () => {
   return (
     <Link
-      href="#"
+      href="/"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
       <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
@@ -137,7 +137,7 @@ const Dashboard = ({ children }: { children: React.ReactNode }) => {
       {Array.from({ length: 1 }).map((_, index) => (
         <div
           key={"second-array" + index}
-          className="w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse h-full"
+          className="w-full rounded-lg bg-gray-100 dark:bg-neutral-800  h-full"
         >
           <div className="h-full">{children}</div>
         </div>

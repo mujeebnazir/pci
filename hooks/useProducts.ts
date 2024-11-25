@@ -21,7 +21,7 @@ const useProducts = ({ category }: { category?: string }) => {
     };
     getAllProducts();
   }, [category]);
-  return { products, loadingProducts, error };
+  return { products, loadingProducts, error , setProducts};
 };
 
 export default useProducts;
