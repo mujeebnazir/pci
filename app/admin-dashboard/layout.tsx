@@ -3,6 +3,8 @@
 
 import React from "react";
 import { AppSidebar } from "@/components/admin/AppSidebar";
+import ProtectedRoute from "@/providers/ProtectedRoute";
+
 
 
 export default function AdminLayout({ children } : Readonly<{
@@ -10,9 +12,12 @@ export default function AdminLayout({ children } : Readonly<{
   }>) {
   return (
     <div className="flex h-screen ">
+      <ProtectedRoute>
       <AppSidebar>
         {children}
       </AppSidebar>
+      </ProtectedRoute>
+   
     </div>
   );
 }

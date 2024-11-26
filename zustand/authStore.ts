@@ -6,7 +6,7 @@ interface AuthState {
   isLoggedIn: boolean;
   session: object | null;
   signUp: (email: string, password: string) => Promise<boolean>;
-  signIn: (email: string, password: string) => Promise<boolean>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; account: any }>;
   logout: () => Promise<boolean>;
   checkUserStatus: () => Promise<object | null>;
 }
@@ -28,16 +28,15 @@ const useAuthStore = create<AuthState>((set) => ({
   },
 
   signIn: async (email: string, password: string) => {
-    const success = await AuthService.signIn(email, password);
+    const { success , account} = await AuthService.signIn(email, password);
 
     if (success) {
       const user = await AuthService.getCurrentUser();
-
       set({ isLoggedIn: true, session: user });
     } else {
       set({ isLoggedIn: false, session: null });
     }
-    return success;
+    return {success, account};
   },
 
   logout: async () => {

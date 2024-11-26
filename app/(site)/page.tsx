@@ -6,13 +6,17 @@ import { features } from "@/constants";
 import useProducts from "@/hooks/useProducts";
 import { useCartStore } from "@/zustand/cart";
 import { useEffect } from "react";
+import useAuthStore from "@/zustand/authStore";
 export default function Home() {
   const { products } = useProducts({});
   const store = useCartStore((state) => state);
-
+  const auth = useAuthStore((state) => state);
+  
   useEffect(() => {
     const fetchCart = async () => {
       try {
+       const session = await auth.checkUserStatus();
+       console.log("session", session);
         await store.initializeCart();
       } catch (err: any) {
         console.error("Error initializing cart:", err);

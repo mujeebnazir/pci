@@ -1,6 +1,7 @@
 import client from "@/utils/appwrite";
 import { Databases, Account, ID, Query } from "appwrite";
 
+
 class AuthService {
   private account: Account;
   private session: any = null;
@@ -56,20 +57,30 @@ class AuthService {
     }
   }
 
-  async signIn(email: string, password: string): Promise<boolean> {
+  async signIn(email: string, password: string): Promise<{ success: boolean; account?: any; session?: any }> {
     try {
-      const response = await this.account.createEmailPasswordSession(
-        email,
-        password
-      );
-
+      const response = await this.account.createEmailPasswordSession(email, password);
+      const account = await this.account.get();
+  
+      const isAdmin = account.labels.includes("admin");
+      if (isAdmin) {
+        console.log("User is admin:", account);
+      } else {
+        console.log("User is not admin:", account);
+      }
+  
       this.isLoggedIn = !!response;
       this.session = response;
-      return this.isLoggedIn;
+  
+      return { success: this.isLoggedIn, account, session: response };
     } catch (error: any) {
-      return false;
+      console.error("Error during sign-in:", error.message);
+      return { success: false };
     }
   }
+  
+
+  
 
   async logout(): Promise<boolean> {
     try {
@@ -103,6 +114,7 @@ class AuthService {
         phone: userDoc.phone,
         address: userDoc.address,
         cartId: userCart.documents[0].$id,
+        label : user.labels
       };
 
       this.session = userInfo;
