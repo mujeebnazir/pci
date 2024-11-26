@@ -39,9 +39,14 @@ const AuthModel = () => {
     setError(""); // Clear previous errors
 
     try {
-      const success = await signIn(email, password);
+      const { success, account } = await signIn(email, password);
       if (success) {
         toast.success("Login successful");
+        console.log(account.labels.includes("admin"));
+        if (account.labels.includes("admin")) {
+          router.push("/admin-dashboard");
+          return;
+        }
         router.push("/");
       } else {
         toast.error("Login failed. Please check your credentials.");

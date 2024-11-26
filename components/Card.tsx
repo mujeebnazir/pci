@@ -38,7 +38,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleClick = () => {
     router.push(`/product/${product?.id}`);
   };
-  console.log("product", product);
   const handleAddToCart = async (e: React.MouseEvent) => {
     const user = await checkUserStatus();
     if (!user) {
