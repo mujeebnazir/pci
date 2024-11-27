@@ -39,8 +39,8 @@ const AuthModel = () => {
     setError(""); // Clear previous errors
 
     try {
-      const { success, account } = await signIn(email, password);
-      if (success) {
+      const { session, account } = await signIn(email, password);
+      if (session) {
         toast.success("Login successful");
         console.log(account.labels.includes("admin"));
         if (account.labels.includes("admin")) {
@@ -61,24 +61,31 @@ const AuthModel = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); // Start loading
-    setError(""); // Clear previous errors
+    setLoading(true);
+    setError("");
 
     try {
-      const success = await signUp(email, password);
-      if (success) {
+      const result = await signUp(email, password);
+
+      if (result.success) {
         toast.success("Signup successful");
         router.push("/");
       } else {
-        toast.error("Signup failed. Please check your credentials.");
+        setError(
+          result.message || "Signup failed. Please check your credentials."
+        );
+        toast.error(
+          result.message || "Signup failed. Please check your credentials."
+        );
       }
     } catch (error: any) {
       setError(error?.message || "An unexpected error occurred");
       toast.error("Internal service error");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
+
   return (
     <>
       <Model
