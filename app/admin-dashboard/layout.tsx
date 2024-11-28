@@ -12,11 +12,11 @@ export default function AdminLayout({ children } : Readonly<{
   }>) {
   return (
     <div className="flex h-screen ">
-      <ProtectedRoute>
+      {/* <ProtectedRoute> */}
       <AppSidebar>
         {children}
       </AppSidebar>
-      </ProtectedRoute>
+      {/* </ProtectedRoute> */}
    
     </div>
   );

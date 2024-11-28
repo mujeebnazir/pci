@@ -8,7 +8,7 @@ import { useCartStore } from "@/zustand/cart";
 import { useEffect } from "react";
 import useAuthStore from "@/zustand/authStore";
 export default function Home() {
-  const { products } = useProducts({});
+  const { products } = useProducts();
   const store = useCartStore((state) => state);
   const auth = useAuthStore((state) => state);
   
