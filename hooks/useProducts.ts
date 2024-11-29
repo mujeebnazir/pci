@@ -19,7 +19,7 @@ const useProducts = ({
     setLoadingProducts(true);
     setError(null);
     try {
-      const offset = (currentPage - 1) * pageSize; // Calculate offset based on currentPage
+      const offset = (currentPage - 1) * pageSize; 
       const { products: fetchedProducts, total } =
         await ProductService.getProducts(category, pageSize, offset);
       setProducts(fetchedProducts);
