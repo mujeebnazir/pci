@@ -13,6 +13,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import useQuickModel from "@/hooks/useQuickModel";
 
 type Product = {
   $id: string; // Add this property
@@ -31,6 +32,7 @@ type ProductCardProps = {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const router = useRouter();
+  const quickModel = useQuickModel();
   const { checkUserStatus } = useAuthStore();
   const authModel = useAuthModel();
   const addToCart = useCartStore((state) => state.addItem);
@@ -63,17 +65,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }
   };
 
+  const handleQuickViewClick = () => {
+    quickModel.onOpen(product.id);
+  };
+
   return (
     <div className="group flex flex-col items-center justify-center cursor-pointer transition transform hover:scale-105">
-      <div
-        onClick={handleClick}
-        className="relative h-[65vh] my-2 w-full max-w-xs overflow-hidden bg-white rounded-md shadow-lg transition-all duration-300 hover:shadow-xl"
-      >
+      <div className="relative h-[65vh] my-2 w-full max-w-xs overflow-hidden bg-white rounded-md shadow-lg transition-all duration-300 hover:shadow-xl">
         <Carousel>
           <CarouselContent>
             {product?.images?.map((image, index) => (
               <CarouselItem key={index}>
-                <div className="p-1">
+                <div onClick={handleClick}>
                   <div className="relative overflow-hidden">
                     <img
                       src={image}
@@ -90,7 +93,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <CarouselNext />
         </Carousel>
 
-        <button className="absolute w-full bottom-0 left-1/2 transform -translate-x-1/2 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 bg-black px-5 py-2 text-center text-sm font-semibold text-white hover:bg-gray-700">
+        <button
+          onClick={handleQuickViewClick}
+          className="absolute  w-full bottom-0 left-1/2 transform -translate-x-1/2 opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 bg-black px-5 py-2 text-center text-sm font-semibold text-white hover:bg-gray-700"
+        >
           Quick View
         </button>
       </div>

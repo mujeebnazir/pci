@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 import AuthModel from "@/components/AuthModel";
+import QuickViewModel from "@/components/QuickViewModel";
+import useQuickModel from "@/hooks/useQuickModel";
 
 const ModelProvider = () => {
+  const quickModelStore = useQuickModel();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -15,6 +18,7 @@ const ModelProvider = () => {
   }
   return (
     <>
+      <QuickViewModel productId={quickModelStore.id} />
       <AuthModel />
     </>
   );
