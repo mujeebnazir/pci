@@ -48,8 +48,8 @@ const reviews: Review[] = [
 const ProductPage: React.FC<{ product: Product }> = ({ product }) => {
   return (
     <div className=" mx-auto px-4 sm:px-6 lg:px-8   h-screen overflow-hidden ">
-      <div className="flex flex-col lg:flex-row space-x-6 py-8  h-full">
-        <div className="w-full lg:w-[45%] h-full  p-4">
+      <div className="flex flex-col lg:flex-row space-y-6 lg:space-x-6 w-full  h-full">
+        <div className="w-full lg:w-[45%] h-full  px-4">
           <ProductGallery images={product?.images || []} />
         </div>
 
@@ -87,7 +87,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images }) => {
         <img
           src={images[selectedImage]}
           alt={images[selectedImage]}
-          className="w-[30vw] h-[80vh] border border-gray-300 rounded-md shadow-md"
+          className="w-[30vw] h-[80vh] border border-gray-300 rounded-md "
         />
       </div>
     </div>
