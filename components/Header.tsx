@@ -17,14 +17,13 @@ import toast from "react-hot-toast";
 const Header: React.FC = () => {
   const router = useRouter();
   const authModel = useAuthModel();
-  const { checkUserStatus } = useAuthStore();
+  const { session} = useAuthStore();
   const itemsCount = useCartStore((state) => state.itemsCount);
   const [showNavbar, setShowNavbar] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > lastScrollY) {
@@ -40,11 +39,11 @@ const Header: React.FC = () => {
   }, [lastScrollY]);
 
   const handleCartClick = async () => {
-    const user = await checkUserStatus();
-    if (!user) {
+    if (!session) {
       toast.error("Please login first!");
       return authModel.onOpen();
     }
+    
     router.push("/cart");
   };
   return (

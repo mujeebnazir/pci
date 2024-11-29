@@ -124,38 +124,52 @@ class ProductService {
   }
 
   /**
-   * Fetch all products or filter by category
-   * @param categoryName Optional category name to filter products
-   * @returns Array of products
-   */
-  async getProducts(category?: string): Promise<Product[]> {
-    try {
-      const query = category ? [Query.equal("category", category)] : [];
-      console.log("Query being executed:", query);
-      const response = await this.databases.listDocuments(
-        DATABASE_ID,
-        PRODUCT_COLLECTION_ID,
-        query
-      );
-      console.log("Response from database:", response);
-      return response.documents.map((document) => ({
-        id: document.$id,
-        name: document.name,
-        description: document.description,
-        price: document.price,
-        sizesAvailable: document.sizesAvailable,
-        itemsCount: document.itemsCount,
-        category: document.category,
-        images: document.images.map((imageId: string) =>
-          this.storage.getFileView(BUCKET_ID, imageId)
-        ),
-        createdAt: document.$createdAt,
-      }));
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      throw new Error("Failed to fetch products");
-    }
+ * Fetch all products or filter by category with pagination
+ * @param category Optional category name to filter products
+ * @param limit Number of products to fetch per page (default: 10)
+ * @param offset Starting point for fetching products (default: 0)
+ * @returns Object containing products and pagination metadata
+ */
+async getProducts(
+  category?: string,
+  limit: number = 100,
+  offset: number = 0
+): Promise<{ products: Product[]; total: number }> {
+  try {
+    const query = [
+      ...(category ? [Query.equal("category", category)] : []),
+      Query.limit(limit),
+      Query.offset(offset),
+    ];
+    console.log("Query being executed:", query);
+
+    const response = await this.databases.listDocuments(
+      DATABASE_ID,
+      PRODUCT_COLLECTION_ID,
+      query
+    );
+    console.log("Response from database:", response);
+
+    const products = response.documents.map((document) => ({
+      id: document.$id,
+      name: document.name,
+      description: document.description,
+      price: document.price,
+      sizesAvailable: document.sizesAvailable,
+      itemsCount: document.itemsCount,
+      category: document.category,
+      images: document.images.map((imageId: string) =>
+        this.storage.getFileView(BUCKET_ID, imageId)
+      ),
+      createdAt: document.$createdAt,
+    }));
+
+    return { products, total: response.total };
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw new Error("Failed to fetch products");
   }
+}
 
   async getProduct(id: string): Promise<any> {
     try {
@@ -175,6 +189,54 @@ class ProductService {
     } catch (error) {
       console.error("Error fetching product:", error);
       return Promise.reject(error);
+    }
+  }
+  /**
+   * Update specific fields of a product
+   * @param productId Product document ID
+   * @param updates Partial update data: price, sizesAvailable, itemsCount
+   * @returns Updated product document
+   */
+  async updateProduct(
+    productId: string,
+    updates: Partial<Pick<Product, "price" | "sizesAvailable" | "itemsCount">>
+  ) {
+    try {
+      if (!productId) {
+        throw new Error("Product ID is required");
+      }
+
+      // Validate the fields to be updated
+      const { price, sizesAvailable, itemsCount } = updates;
+      if (
+        price === undefined &&
+        sizesAvailable === undefined &&
+        itemsCount === undefined
+      ) {
+        throw new Error("No fields provided for update");
+      }
+
+      // Prepare the update data
+      const updateData: Partial<
+        Pick<Product, "price" | "sizesAvailable" | "itemsCount">
+      > = {};
+      if (price !== undefined) updateData.price = price;
+      if (sizesAvailable !== undefined)
+        updateData.sizesAvailable = sizesAvailable;
+      if (itemsCount !== undefined) updateData.itemsCount = itemsCount;
+
+      // Update the product document in the database
+      const response = await this.databases.updateDocument(
+        DATABASE_ID,
+        PRODUCT_COLLECTION_ID,
+        productId,
+        updateData
+      );
+
+      return response;
+    } catch (error) {
+      console.error("Error updating product:", error);
+      throw new Error("Failed to update product");
     }
   }
 }

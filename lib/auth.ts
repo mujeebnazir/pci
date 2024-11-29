@@ -3,8 +3,6 @@ import { Databases, Account, ID, Query } from "appwrite";
 
 class AuthService {
   private account: Account;
-  private session: any = null;
-  private isLoggedIn: boolean = false;
   private databases: Databases;
 
   constructor() {
@@ -18,14 +16,28 @@ class AuthService {
     fullname?: string,
     phone?: string,
     address?: string
-  ): Promise<boolean> {
+  ): Promise<{ success: boolean; message?: string; session?: any }> {
     try {
-      const response = await this.account.create(
-        ID.unique(),
-
-        email,
-        password
+      // Check if the email already exists
+      const isEmailExist = await this.databases.listDocuments(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID as string,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_USER as string,
+        [Query.equal("email", email)]
       );
+  
+      console.log("Email check result:", isEmailExist);
+  
+      if (isEmailExist.total > 0) {
+        return {
+          success: false,
+          message: "Email already exists",
+        };
+      }
+  
+      // Create the account in Appwrite
+      const response = await this.account.create(ID.unique(), email, password);
+  
+      // Add additional user details in the database
       const userDoc = await this.databases.createDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "",
         process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_USER ?? "",
@@ -34,9 +46,11 @@ class AuthService {
           fullname: fullname || "",
           phone: phone || "",
           address: address || "",
+          email: email,
         }
       );
-
+  
+      // Create a user cart
       const userCart = await this.databases.createDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID as string,
         process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART as string,
@@ -45,37 +59,50 @@ class AuthService {
           user: `${response.$id}`,
         }
       );
-
-      if (!userDoc && !response && !userCart)
-        throw new Error("User document creation failed");
-      this.isLoggedIn = !!response;
-      this.session = response;
-      return this.isLoggedIn;
+  
+      if (!userDoc || !response || !userCart) {
+        return {
+          success: false,
+          message: "User document creation failed",
+        };
+      }
+  
+      // Return success
+      return {
+        success: true,
+        session: response,
+      };
     } catch (error: any) {
-      return error.message;
+      console.error("Sign-up error:", error.message);
+  
+      // Return error details
+      return {
+        success: false,
+        message: error.message || "An unknown error occurred",
+      };
     }
   }
+  
 
-  async signIn(email: string, password: string): Promise<boolean> {
+  async signIn(
+    email: string,
+    password: string
+  ): Promise<{ account?: any; session?: any }> {
     try {
       const response = await this.account.createEmailPasswordSession(
         email,
         password
       );
-
-      this.isLoggedIn = !!response;
-      this.session = response;
-      return this.isLoggedIn;
+      const account = await this.account.get();
+      return { account, session: response };
     } catch (error: any) {
-      return false;
+      return { account: null, session: null };
     }
   }
 
   async logout(): Promise<boolean> {
     try {
       await this.account.deleteSession("current");
-      this.isLoggedIn = false;
-      this.session = null;
       return true;
     } catch (error: any) {
       return false;
@@ -103,16 +130,11 @@ class AuthService {
         phone: userDoc.phone,
         address: userDoc.address,
         cartId: userCart.documents[0].$id,
+        label: user.labels,
       };
-
-      this.session = userInfo;
-      this.isLoggedIn = true;
-
       return userInfo;
     } catch (error: any) {
-      console.error("Error fetching user data:", error.message);
-      this.isLoggedIn = false;
-      return null;
+         return null;
     }
   }
 }
