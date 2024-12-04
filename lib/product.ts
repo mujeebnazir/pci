@@ -170,6 +170,47 @@ class ProductService {
     }
   }
 
+async getNewlyAddedProducts(
+  limit: number = 10,
+  offset: number = 0
+): Promise<{ products: Product[]; total: number }> {
+  try {
+    const query = [
+      Query.limit(limit),
+      Query.offset(offset),
+      Query.orderDesc("$createdAt"),
+    ];
+    console.log("Query being executed for new products:", query);
+
+    const response = await this.databases.listDocuments(
+      DATABASE_ID,
+      PRODUCT_COLLECTION_ID,
+      query
+    );
+    console.log("Response from database for new products:", response);
+
+    const products = response.documents.map((document) => ({
+      id: document.$id,
+      name: document.name,
+      description: document.description,
+      price: document.price,
+      sizesAvailable: document.sizesAvailable,
+      itemsCount: document.itemsCount,
+      category: document.category,
+      images: document.images.map((imageId: string) =>
+        this.storage.getFileView(BUCKET_ID, imageId)
+      ),
+      createdAt: document.$createdAt,
+    }));
+
+    return { products, total: response.total };
+  } catch (error) {
+    console.error("Error fetching newly added products:", error);
+    throw new Error("Failed to fetch newly added products");
+  }
+}
+
+
   async getProduct(id: string): Promise<any> {
     try {
       if (!id) {
