@@ -32,9 +32,9 @@ const Products: React.FC<ProductsProps> = ({ products, onClick }) => {
   };
 
   return (
-    <div className="flex flex-col items-center h-full">
+    <div className="flex flex-col items-center h-full" onClick={onClick}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Suspense fallback={<div className="w-full h-60 bg-gray-200 animate-pulse rounded-lg"></div>}>
+        <Suspense fallback={<Loading />}>
           {visibleProducts.map((product, index) => (
             <motion.div
               key={product.id}
@@ -43,7 +43,7 @@ const Products: React.FC<ProductsProps> = ({ products, onClick }) => {
               variants={cardVariants}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <LazyCard product={product} onClick={onClick} />
+              <LazyCard product={product}  />
             </motion.div>
           ))}
         </Suspense>
