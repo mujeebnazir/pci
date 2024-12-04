@@ -1,116 +1,147 @@
-"use client";
+import React from "react";
+import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import hero from "../public/hero.jpg"; // Ensure this is a unique image
-import hero2 from "../public/hero2.jpg"; // Ensure this is a unique image
-import hero3 from "../public/hero3.jpg"; // Ensure this is a unique image
+import Link from "next/link";
 
-const HeroContent = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const images = [hero, hero2, hero3];
-
-  const handleNext = () => {
-    setActiveIndex((prevIndex) => (prevIndex + 1) % images.length);
+const LuxuryHeroSection = () => {
+  const fadeUpVariant = {
+    hidden: { opacity: 0, x: -100 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 1, ease: "easeOut" },
+    },
   };
 
-  const handlePrev = () => {
-    setActiveIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+  const textFadeVariant = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { duration: 1.2, ease: "easeOut", delay: 0.2 },
+    },
   };
-
-  useEffect(() => {
-    const interval = setTimeout(() => {
-      handleNext();
-    }, 4000);
-
-    return () => clearTimeout(interval);
-  }, [activeIndex]);
 
   return (
-    <div id="indicators-carousel" className="relative w-full h-[60vh]">
-      {/* Carousel wrapper */}
-      <div className="relative h-full overflow-hidden">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`${
-              index === activeIndex ? "opacity-100" : "opacity-0"
-            } absolute inset-0 transition-opacity duration-700 ease-in-out`}
+    <div className="relative min-h-screen text-black pb-10">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 opacity-30">
+        <Image
+          src="/hero.jpg" // Replace with your actual image path
+          alt="Hero Background"
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
+          className="filter grayscale-[50%] blur-[0px]"
+        />
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-80" />
+
+      {/* Urdu Text */}
+      <div className="absolute inset-0 text-center text-white/50 font-serif opacity-80">
+        <motion.div
+          variants={textFadeVariant}
+          initial="hidden"
+          animate="visible"
+          className="absolute top-1/3 left-1/2 transform -translate-x-1/2"
+        >
+          <span className="block text-9xl sm:text-[12rem] md:text-[15rem] font-bold">
+            کشمیر آرٹ
+          </span>
+        </motion.div>
+      </div>
+
+      {/* Hero Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-12 pt-28 pb-40">
+        <div className="max-w-6xl">
+          {/* Decorative Line */}
+          <motion.div
+            variants={fadeUpVariant}
+            initial="hidden"
+            animate="visible"
+            className="flex items-center gap-4 mb-8"
           >
-            <Image
-              src={image}
-              alt={`Slide ${index + 1}`}
-              className="w-full h-full object-cover"
-              width={1920}
-              height={1080}
-              priority={index === activeIndex} // Preload active image
-            />
+            <div className="h-px bg-gray-500/30 w-20" />
+            <span className="text-sm tracking-[0.3em] text-gray-950 uppercase">
+              Since 1892
+            </span>
+            <div className="h-px bg-gray-500/30 w-20" />
+          </motion.div>
+
+          {/* Hero Title */}
+          <motion.h1
+            variants={fadeUpVariant}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.4 }}
+            className="font-serif text-5xl sm:text-7xl md:text-6xl leading-tight text-gray-950 mb-6 tracking-wider"
+          >
+            Luxury in Every Stitch, Tradition in Every Thread
+          </motion.h1>
+
+          {/* Hero Description */}
+          <motion.p
+            variants={fadeUpVariant}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.6 }}
+            className="text-xl sm:text-2xl text-gray-800 mb-12 font-serif italic leading-relaxed"
+          >
+            Experience the timeless artistry of{" "}
+            <span className="text-2xl font-extrabold text-white italic">
+              کشمیر,
+            </span>{" "}
+            where each stitch tells a story of tradition, passion, and unmatched
+            craftsmanship. Elevate your space with the elegance of handcrafted
+            embroidery passed down through generations.
+          </motion.p>
+
+          {/* Call to Actions */}
+          <div className="flex flex-col sm:flex-row gap-6">
+            <motion.button
+              variants={fadeUpVariant}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.8 }}
+              whileHover={{
+                scale: 1.05,
+                backgroundColor: "#333333",
+                boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
+              }}
+              className="group bg-gray-900 text-white px-10 py-4 flex items-center justify-center text-lg shadow-lg hover:shadow-2xl transition-all duration-300"
+            >
+              <Link href="/shop">
+                <p className="flex items-center">
+                  Shop the Collection
+                  <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </p>
+              </Link>
+            </motion.button>
+
+            <motion.button
+              variants={fadeUpVariant}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 1 }}
+              whileHover={{
+                scale: 1.05,
+                backgroundColor: "#444444",
+                boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
+              }}
+              className="group border-2 border-gray-700 text-gray-900 px-10 py-4 flex items-center justify-center text-lg hover:bg-gray-200 hover:shadow-2xl transition-all duration-300"
+            >
+              <Link href="/artisans">
+                <p className="flex items-center">
+                  Discover the Artisans
+                  <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </p>
+              </Link>
+            </motion.button>
           </div>
-        ))}
+        </div>
       </div>
-
-      {/* Slider indicators */}
-      <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 space-x-3 z-30">
-        {images.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setActiveIndex(index)}
-            className={`w-3 h-3 rounded-full ${
-              activeIndex === index ? "bg-white" : "bg-gray-500"
-            }`}
-            aria-label={`Slide ${index + 1}`}
-          ></button>
-        ))}
-      </div>
-
-      {/* Slider controls */}
-      <button
-        onClick={handlePrev}
-        className="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-        aria-label="Previous"
-      >
-        <span className="w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 flex items-center justify-center">
-          <svg
-            className="w-4 h-4 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 6 10"
-          >
-            <path
-              d="M5 1L1 5l4 4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-      </button>
-      <button
-        onClick={handleNext}
-        className="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-        aria-label="Next"
-      >
-        <span className="w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 flex items-center justify-center">
-          <svg
-            className="w-4 h-4 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 6 10"
-          >
-            <path
-              d="M1 9l4-4-4-4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-      </button>
     </div>
   );
 };
 
-export default HeroContent;
+export default LuxuryHeroSection;
