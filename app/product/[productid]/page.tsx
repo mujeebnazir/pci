@@ -3,11 +3,11 @@ import ProductPage from "@/components/ProductPage";
 import { useParams } from "next/navigation";
 import React from "react";
 import useGetProduct from "@/hooks/usegetProduct";
+import Loading from "@/components/Loading";
 
 const ProductPageContainer = () => {
   const { productid } = useParams();
 
-  // Normalize the product ID in case it's an array
   const normalizedProductId = Array.isArray(productid)
     ? productid[0]
     : productid;
@@ -15,17 +15,15 @@ const ProductPageContainer = () => {
   // Pass the normalized ID directly to the hook
   const { product } = useGetProduct(normalizedProductId ?? "");
 
-  // Debugging logs
-  console.log("Product ID:", normalizedProductId);
-  console.log("Fetched Product:", product);
-
   return (
-    <div className="flex m-10 w-[95%] flex-col h-screen items-center justify-center">
-      <div className="my-10">
+    <div className="flex flex-col items-center justify-center w-full min-h-screen py-10 px-4">
+      <div className="w-full max-w-6xl">
         {product ? (
           <ProductPage product={product} />
         ) : (
-          <p>Loading product details...</p>
+          <p className="text-center text-lg font-medium">
+            <Loading />
+          </p>
         )}
       </div>
     </div>

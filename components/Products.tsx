@@ -2,30 +2,27 @@
 
 import React, { useState, Suspense } from "react";
 import { motion } from "framer-motion";
+import Loading from "./Loading";
 
 const LazyCard = React.lazy(() => import("@/components/Card"));
 
 type Product = {
+  $id: string; // Add this property
   id: string;
   name: string;
-  description: string;
-  images: string[];
   price: number;
-  discountedPrice: number;
-  rating: number;
-  isOnSale: boolean;
-  size?: string;
-  color?: string;
-  quantity?: number;
-  category?: string;
-  subcategory?: string;
+  description: string;
+  category: string;
+  sizesAvailable: string[]; // Ensure this matches
+  images: string[];
 };
 
 interface ProductsProps {
   products: Product[];
+  onClick?: () => void; // Optional click handler for products
 }
 
-const Products: React.FC<ProductsProps> = ({ products }) => {
+const Products: React.FC<ProductsProps> = ({ products, onClick }) => {
   const [visibleProductsCount, setVisibleProductsCount] = useState(8);
 
   // Handler to load more products
@@ -42,10 +39,10 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center" onClick={onClick}>
       {/* Product grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
           {visibleProducts.map((product, index) => (
             <motion.div
               key={product.id}
