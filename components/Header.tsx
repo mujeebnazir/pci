@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 const Header: React.FC = () => {
   const router = useRouter();
   const authModel = useAuthModel();
-  const { session} = useAuthStore();
+  const { session } = useAuthStore();
   const itemsCount = useCartStore((state) => state.itemsCount);
   const [showNavbar, setShowNavbar] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -43,7 +43,7 @@ const Header: React.FC = () => {
       toast.error("Please login first!");
       return authModel.onOpen();
     }
-    
+
     router.push("/cart");
   };
   return (
@@ -69,7 +69,7 @@ const Header: React.FC = () => {
         </div>
 
         {/* Center Section: Search Bar */}
-        <div className="hidden lg:block w-[35%]">
+        <div className="hidden lg:block w-[35%] ">
           <SearchBar />
         </div>
 

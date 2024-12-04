@@ -124,52 +124,51 @@ class ProductService {
   }
 
   /**
- * Fetch all products or filter by category with pagination
- * @param category Optional category name to filter products
- * @param limit Number of products to fetch per page (default: 10)
- * @param offset Starting point for fetching products (default: 0)
- * @returns Object containing products and pagination metadata
- */
-async getProducts(
-  category?: string,
-  limit: number = 100,
-  offset: number = 0
-): Promise<{ products: Product[]; total: number }> {
-  try {
-    const query = [
-      ...(category ? [Query.equal("category", category)] : []),
-      Query.limit(limit),
-      Query.offset(offset),
-    ];
-    console.log("Query being executed:", query);
+   * Fetch all products or filter by category with pagination
+   * @param category Optional category name to filter products
+   * @param limit Number of products to fetch per page (default: 10)
+   * @param offset Starting point for fetching products (default: 0)
+   * @returns Object containing products and pagination metadata
+   */
+  async getProducts(
+    category?: string,
+    limit: number = 100,
+    offset: number = 0
+  ): Promise<{ products: Product[]; total: number }> {
+    try {
+      const query = [
+        ...(category ? [Query.equal("category", category)] : []),
+        Query.limit(limit),
+        Query.offset(offset),
+      ];
+      console.log("Query being executed:", query);
 
-    const response = await this.databases.listDocuments(
-      DATABASE_ID,
-      PRODUCT_COLLECTION_ID,
-      query
-    );
-    console.log("Response from database:", response);
+      const response = await this.databases.listDocuments(
+        DATABASE_ID,
+        PRODUCT_COLLECTION_ID,
+        query
+      );
 
-    const products = response.documents.map((document) => ({
-      id: document.$id,
-      name: document.name,
-      description: document.description,
-      price: document.price,
-      sizesAvailable: document.sizesAvailable,
-      itemsCount: document.itemsCount,
-      category: document.category,
-      images: document.images.map((imageId: string) =>
-        this.storage.getFileView(BUCKET_ID, imageId)
-      ),
-      createdAt: document.$createdAt,
-    }));
+      const products = response.documents.map((document) => ({
+        id: document.$id,
+        name: document.name,
+        description: document.description,
+        price: document.price,
+        sizesAvailable: document.sizesAvailable,
+        itemsCount: document.itemsCount,
+        category: document.category,
+        images: document.images.map((imageId: string) =>
+          this.storage.getFileView(BUCKET_ID, imageId)
+        ),
+        createdAt: document.$createdAt,
+      }));
 
-    return { products, total: response.total };
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    throw new Error("Failed to fetch products");
+      return { products, total: response.total };
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      throw new Error("Failed to fetch products");
+    }
   }
-}
 
 async getNewlyAddedProducts(
   limit: number = 10,
@@ -222,7 +221,7 @@ async getNewlyAddedProducts(
         PRODUCT_COLLECTION_ID,
         id
       );
-      console.log("response from apppwrite", response);
+
       const images = await response.images.map((imageId: string) =>
         this.storage.getFileView(BUCKET_ID, imageId)
       );
@@ -278,6 +277,37 @@ async getNewlyAddedProducts(
     } catch (error) {
       console.error("Error updating product:", error);
       throw new Error("Failed to update product");
+    }
+  }
+
+  async searchProducts(query: string, limit: number = 30, offset: number = 0) {
+    try {
+      const filters = [Query.search("name", query)];
+
+      const response = await this.databases.listDocuments(
+        DATABASE_ID,
+        PRODUCT_COLLECTION_ID,
+        [...filters, Query.limit(limit), Query.offset(offset)]
+      );
+
+      const products = response.documents.map((document) => ({
+        id: document.$id,
+        name: document.name,
+        description: document.description,
+        price: document.price,
+        sizesAvailable: document.sizesAvailable,
+        itemsCount: document.itemsCount,
+        category: document.category,
+        images: document.images.map((imageId: string) =>
+          this.storage.getFileView(BUCKET_ID, imageId)
+        ),
+        createdAt: document.$createdAt,
+      }));
+
+      return { products, total: response.total };
+    } catch (error) {
+      console.error("Error searching products:", error);
+      throw new Error("Failed to search products");
     }
   }
 }
