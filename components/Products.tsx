@@ -19,7 +19,7 @@ type Product = {
 
 interface ProductsProps {
   products: Product[];
-  onClick?: () => void; // Optional click handler for products
+  onClick?: () => void;
 }
 
 const Products: React.FC<ProductsProps> = ({ products, onClick }) => {
