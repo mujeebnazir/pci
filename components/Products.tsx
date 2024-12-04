@@ -5,21 +5,17 @@ import { motion } from "framer-motion";
 
 const LazyCard = React.lazy(() => import("@/components/Card"));
 
-type Product = {
-  id: string;
+interface Product {
+  id: string | undefined;
   name: string;
   description: string;
-  images: string[];
   price: number;
-  discountedPrice: number;
-  rating: number;
-  isOnSale: boolean;
-  size?: string;
-  color?: string;
-  quantity?: number;
-  category?: string;
-  subcategory?: string;
-};
+  sizesAvailable: string[];
+  itemsCount: number;
+  category: string;
+  images: string[];
+  createdAt: string;
+}
 
 interface ProductsProps {
   products: Product[];
@@ -30,7 +26,7 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
 
   // Handler to load more products
   const handleLoadMore = () => {
-    setVisibleProductsCount((prevCount) => prevCount + 8); // Load 8 more products
+    setVisibleProductsCount((prevCount) => prevCount + 8); 
   };
 
   const visibleProducts = products.slice(0, visibleProductsCount);
@@ -42,10 +38,10 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center h-full">
       {/* Product grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="w-full h-60 bg-gray-200 animate-pulse rounded-lg"></div>}>
           {visibleProducts.map((product, index) => (
             <motion.div
               key={product.id}
@@ -54,7 +50,7 @@ const Products: React.FC<ProductsProps> = ({ products }) => {
               variants={cardVariants}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <LazyCard product={product} />
+              <LazyCard product={product as any} />
             </motion.div>
           ))}
         </Suspense>
