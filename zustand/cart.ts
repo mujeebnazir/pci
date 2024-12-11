@@ -65,6 +65,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const totalAmount = totalMRP - discountOnMRP + deliveryFee;
       const cartItemsData: CartItemData[] = items.map((item) => ({
         ...item,
+
         cartId: item.cartId,
         product: {
           $id: item.product.$id, // Ensure this property exists in `item.product`
@@ -102,7 +103,9 @@ export const useCartStore = create<CartState>((set, get) => ({
         item.quantity
       );
       if (success) {
-        const updatedItems = [...get().items, item];
+        const updatedItems = [...get().items, success];
+        console.log("updatedItems", updatedItems);
+
         const totalMRP = updatedItems.reduce(
           (sum, item) => sum + (item.product.price as number) * item.quantity,
           0
@@ -124,13 +127,15 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  // **Remove Item**
   removeItem: async (id) => {
     try {
+      console.log("id", id);
+
       set({ isLoading: true, error: null });
       const success = await CartItemService.removeCartItem(id);
       if (success) {
         const updatedItems = get().items.filter((item) => item.id !== id);
+
         const totalMRP = updatedItems.reduce(
           (sum, item) => sum + (item.product.price as number) * item.quantity,
           0

@@ -1,19 +1,20 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Link from "next/link"; 
-import Image from "next/image"; 
+import Link from "next/link";
+import Image from "next/image";
 
 const GiftsSection = () => {
   return (
-    <section className="py-12 px-6 sm:px-8 md:px-10 lg:px-12 text-black">
-      {/* Improved heading */}
+    <section className=" px-6 sm:px-8 md:px-10 lg:px-12 text-black h-4/5 m-10">
+      {/* Improved Heading */}
       <motion.h2
-        className="text-4xl sm:text-5xl font-semibold text-center text-gray-900 mb-12 leading-tight tracking-wide uppercase"
+        className="text-2xl sm:text-3xl font-semibold text-center 
+      uppercase text-gray-900 mb-12 leading-tight tracking-wide"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        Gifts for Your Special One
+        Gift Your Special One
       </motion.h2>
 
       {/* Refined Grid Layout with responsive design */}
@@ -28,9 +29,9 @@ const GiftsSection = () => {
             <Image
               src="/For-her.jpg"
               alt="Gift for Women"
-              width={500}
-              height={400}
-              className="w-full h-72 object-cover rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out"
+              width={800}
+              height={800}
+              className="w-full h-auto object-cover rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out"
             />
           </Link>
         </motion.div>
@@ -45,9 +46,9 @@ const GiftsSection = () => {
             <Image
               src="/For-Him.jpg"
               alt="Gift for Men"
-              width={500}
-              height={400}
-              className="w-full h-72 object-cover rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out"
+              width={800}
+              height={800}
+              className="w-full h-auto object-cover rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out"
             />
           </Link>
         </motion.div>
@@ -62,9 +63,9 @@ const GiftsSection = () => {
             <Image
               src="/For-Unisex.jpg"
               alt="Gift for Unisex"
-              width={500}
-              height={400}
-              className="w-full h-72 object-cover rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out"
+              width={800}
+              height={800}
+              className="w-full h-auto object-cover rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out"
             />
           </Link>
         </motion.div>

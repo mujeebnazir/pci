@@ -5,6 +5,7 @@ import AuthService from "./auth";
 
 interface Product {
   $id: string;
+  id: string;
   name: string;
   images: string[];
   price: number;
@@ -43,8 +44,10 @@ class CartItemService {
 
   async addCartItem(product: Product, quantity: number = 1): Promise<object> {
     try {
+      console.log("product", product.id);
+
       const user = await this.getCurrentUser();
-      console.log("user", user);
+     
       const cartItem = await this.databases.createDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
         process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
@@ -52,7 +55,7 @@ class CartItemService {
         {
           cart: user.cartId,
           quantity,
-          product: product.$id,
+          product: product.id,
         }
       );
       console.log("cartItem", cartItem);  

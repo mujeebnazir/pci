@@ -18,6 +18,8 @@ const CartPage: React.FC = () => {
   } = useCartStore((state) => state);
   const router = useRouter();
 
+  console.log("items", items);
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6 w-[80%] mx-auto">
       {/* Cart Items Section */}
@@ -28,9 +30,9 @@ const CartPage: React.FC = () => {
         </p>
         <div className="space-y-4 max-h-[35vh] overflow-y-auto hide-scrollbar">
           {items.length > 0 ? (
-            items.map((item) => (
+            items.map((item, index) => (
               <CartItem
-                key={item.id}
+                key={index + "dvnejv"}
                 item={item}
                 onRemove={() => removeItem(item.id || "")}
                 onIncrease={() => onIncrease(item.id || "")}
