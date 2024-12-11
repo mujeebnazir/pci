@@ -15,10 +15,10 @@ interface Product {
 }
 
 interface CartItem {
-  id?: string; // Optional unique identifier
-  cartId?: string; // Optional cart identifier
-  product: Product; // Associated product object
-  quantity: number; // Quantity of the product in the cart
+  id?: string;
+  cartId?: string; 
+  product: Product; 
+  quantity: number; 
 }
 
 type CartItemProps = {
@@ -43,7 +43,7 @@ const CartItem: React.FC<CartItemProps> = ({
   return (
     <div className="flex items-center justify-between p-4 border border-gray-300 rounded-lg shadow-md">
       <img
-        src={item.product.images[0]} // Replace with actual placeholder
+        src={item.product.images[0]}
         alt={item.product.name}
         className="w-20 h-20 object-cover rounded"
       />

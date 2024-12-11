@@ -3,8 +3,9 @@ import React from "react";
 import CartItem from "./CartItem";
 import OrderSummary from "./OrderSummary";
 import { useCartStore } from "../../zustand/cart";
+import { useRouter } from "next/navigation";
 
-const CartPage: React.FC = ({}) => {
+const CartPage: React.FC = () => {
   const {
     items,
     onDecrease,
@@ -15,6 +16,7 @@ const CartPage: React.FC = ({}) => {
     discountOnMRP,
     deliveryFee,
   } = useCartStore((state) => state);
+  const router = useRouter();
 
   console.log("items", items);
 
@@ -38,22 +40,31 @@ const CartPage: React.FC = ({}) => {
               />
             ))
           ) : (
-            <p className="text-center text-gray-500 text-md font-normal">
-              No items in your cart!
-            </p>
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <p className="text-gray-600 text-xl font-semibold">Your Cart is Empty!</p>
+              <p className="text-gray-500 text-sm mt-2">Browse our products and add items to your cart.</p>
+              <a href="/shop" className="mt-4 bg-green-600 text-white py-2 px-6 rounded hover:bg-green-800">
+                Start Shopping
+              </a>
+            </div>
           )}
         </div>
       </div>
 
       {/* Order Summary Section */}
-      <div className="bg-gray-200 w-full lg:w-[40%] p-4 rounded-lg">
-        <OrderSummary
-          totalMRP={totalMRP}
-          discountOnMRP={discountOnMRP}
-          deliveryFee={deliveryFee}
-          totalAmount={totalAmount}
-        />
-      </div>
+      {items.length > 0 && (
+        <div className="bg-gray-200 w-full lg:w-[40%] p-4 rounded-lg">
+          <OrderSummary
+            totalMRP={totalMRP}
+            discountOnMRP={discountOnMRP}
+            deliveryFee={deliveryFee}
+            totalAmount={totalAmount}
+          />
+          <button onClick={() => router.push("/check-out")} className="w-full hover:bg-green-800 bg-green-600 text-white py-2 mt-4">
+            Go to Checkout
+          </button>
+        </div>
+      )}
     </div>
   );
 };

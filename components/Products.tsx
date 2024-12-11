@@ -2,19 +2,18 @@
 
 import React, { useState, Suspense } from "react";
 import { motion } from "framer-motion";
-import Loading from "./Loading";
-
+import Loading from "@/components/Loading";
 const LazyCard = React.lazy(() => import("@/components/Card"));
 
 type Product = {
-  $id: string; // Add this property
+  $id: string; 
   id: string;
   name: string;
   price: number;
   description: string;
   category: string;
-  sizesAvailable: string[]; // Ensure this matches
-  images: string[]; // Add this property
+  sizesAvailable: string[]; 
+  images: string[];
 };
 
 interface ProductsProps {
