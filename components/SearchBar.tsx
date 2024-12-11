@@ -42,7 +42,7 @@ const SearchBar = () => {
         <input
           type="search"
           id="default-search"
-          className="block w-full p-2 ps-5 text-sm rounded-lg text-gray-900 border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200"
+          className="block w-full p-2 ps-5 text-sm rounded text-gray-900 border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200"
           placeholder="Search Shawls, Handbags, Wallets..."
           value={searchQuery}
           onChange={handleSearchChange}

@@ -29,11 +29,11 @@ export function CategorySection() {
   ];
 
   return (
-    <>
-      <h2 className="text-4xl mt-5 sm:text-5xl font-semibold text-center text-gray-900 mb-12 leading-tight tracking-wide">
-        Shop by Category
-      </h2>
+    <section className=" w-full m-12 flex justify-center flex-col items-center">
+      <span className="font-semibold text-2xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
+        SHOP BY CATEGORY
+      </span>
       <FocusCards cards={cards} />
-    </>
+    </section>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import CartPage from "@/components/cart/CardPage";
-import React from "react";
+import { useCartStore } from "@/zustand/cart";
+import React, { useEffect } from "react";
 
 const page = () => {
   return (
