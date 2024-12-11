@@ -8,7 +8,7 @@ const GiftsSection = () => {
     <section className="py-12 px-6 sm:px-8 md:px-10 lg:px-12 text-black">
       {/* Improved heading */}
       <motion.h2
-        className="text-4xl sm:text-5xl font-semibold text-center text-gray-900 mb-12 leading-tight tracking-wide"
+        className="text-4xl sm:text-5xl font-semibold text-center text-gray-900 mb-12 leading-tight tracking-wide uppercase"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}

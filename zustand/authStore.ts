@@ -4,7 +4,7 @@ import AuthService from "@/lib/auth";
 // Define types for the user session and state
 interface AuthState {
   isLoggedIn: boolean;
-  session: object | null;
+  session: object | null | any;
   signUp: (email: string, password: string) => Promise<{ success: boolean; message?: string; }>;
   signIn: (email: string, password: string) => Promise<{ session: any; account: any }>;
   logout: () => Promise<boolean>;

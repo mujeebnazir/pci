@@ -30,9 +30,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <span>Total Amount:</span> <span>₹{totalAmount}</span>
     </p>
 
-    <button className="w-full hover:bg-green-800 bg-green-600 text-white py-2">
-      Go to Checkout
-    </button>
+  
   </div>
 );
 

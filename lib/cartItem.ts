@@ -55,6 +55,7 @@ class CartItemService {
           product: product.$id,
         }
       );
+      console.log("cartItem", cartItem);  
       return cartItem;
     } catch (error: any) {
       console.error("Error adding cart item:", error.message);

@@ -1,15 +1,27 @@
 "use client";
-import Showcase from "@/components/Showcase";
-import Products from "@/components/Products";
+import dynamic from "next/dynamic";
+const Showcase = dynamic(() => import("@/components/Showcase"), { ssr: false });
+const Products = dynamic(() => import("@/components/Products"), { ssr: false });
+const GiftsSection = dynamic(() => import("@/components/GiftSection"), {
+  ssr: false,
+});
+const HeroContent = dynamic(() => import("@/components/HeroContent"), {
+  ssr: false,
+});
+const CategorySection = dynamic(() => import("@/components/CategorySection"), {
+  ssr: false,
+});
+const WhyPCIBanner = dynamic(() => import("@/components/Banner"), {
+  ssr: false,
+});
+import { OurTopCollections } from "@/components/OurTopCollections";
+
 import { useCartStore } from "@/zustand/cart";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import useAuthStore from "@/zustand/authStore";
 import { useFetchNewlyAddedProducts } from "@/hooks/useNewlyAddedProducts";
 import useProducts from "@/hooks/useProducts";
-import GiftsSection from "@/components/GiftSection";
-import WhyPCIBanner from "@/components/Banner";
-import HeroContent from "@/components/HeroContent";
-import {CategorySection} from "@/components/CategorySection";
+import Loading from "@/components/Loading";
 
 export default function Home() {
   const { newProducts, loading } = useFetchNewlyAddedProducts();
@@ -17,13 +29,12 @@ export default function Home() {
   const store = useCartStore((state) => state);
   const auth = useAuthStore((state) => state);
 
-  const [isLoading, setIsLoading] = useState(true);
-
+  const isLoading = loading || loadingProducts;
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const session = await auth.checkUserStatus();
-        console.log("session", session);
+        // const session = await auth.checkUserStatus();
+        // console.log("session", session);
         await store.initializeCart();
       } catch (err: any) {
         console.error("Error initializing cart:", err);
@@ -34,19 +45,15 @@ export default function Home() {
     fetchCart();
   }, []);
 
-  useEffect(() => {
-    // Set loading state to false when both products are loaded
-    if (!loading && !loadingProducts) {
-      setIsLoading(false);
-    }
-  }, [loading, loadingProducts]);
-
-  const images = [
-    { src: "/images/i1.webp", alt: "Product 1" },
-    { src: "/images/i2.webp", alt: "Product 2" },
-    { src: "/images/i3.webp", alt: "Product 3" },
-    { src: "/images/i4.webp", alt: "Product 4" },
-  ];
+  const images = useMemo(
+    () => [
+      { src: "/images/i1.webp", alt: "Product 1" },
+      { src: "/images/i2.webp", alt: "Product 2" },
+      { src: "/images/i3.webp", alt: "Product 3" },
+      { src: "/images/i4.webp", alt: "Product 4" },
+    ],
+    []
+  );
 
   return (
     <div className="flex flex-col h-full items-center justify-center rounded-md bg-white">
@@ -61,10 +68,10 @@ export default function Home() {
           New Arrivals
         </span>
         <div className="py-4 w-full">
-          {loading ? (
-            <div className="w-full h-60 bg-gray-200 animate-pulse rounded-lg" />
+          {isLoading ? (
+            <Loading/>
           ) : (
-            <Products products={newProducts} />
+            <Products products={newProducts as any} />
           )}
         </div>
       </section>
@@ -75,8 +82,8 @@ export default function Home() {
           Best Sellers
         </span>
         <div className="py-4 w-full">
-          {loadingProducts ? (
-            <div className="w-full h-60 bg-gray-200 animate-pulse rounded-lg" />
+          {isLoading ? (
+            <Loading/>
           ) : (
             <Products products={products} />
           )}
@@ -85,7 +92,8 @@ export default function Home() {
 
       {/* Gift Section */}
       <GiftsSection />
-
+      {/* Our Top Collections Section */}
+      <OurTopCollections/>
       {/* Showcase Section */}
       <section className="flex flex-col justify-center items-center p-12 w-full bg-gray-100">
         <div className="min-h-screen flex items-center justify-center">
@@ -93,9 +101,9 @@ export default function Home() {
         </div>
       </section>
       {/*category section */}
-      <CategorySection/>
+      <CategorySection />
       {/* PCI Banner Section */}
-      <section className="mb-6 w-full bg-gray-50">
+      <section className="mb-6 hidden md:block">
         <WhyPCIBanner />
       </section>
     </div>

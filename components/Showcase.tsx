@@ -6,7 +6,7 @@ type Props = {
 
 const Showcase: React.FC<Props> = ({ images }) => {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center p-8 bg-white space-x-16 rounded-xl mx-auto">
+    <div className="flex flex-col md:flex-row items-center justify-center p-8 bg-white space-x-16 rounded-xl mx-auto ">
       {/* Left Side: Quote and Button */}
       <div className="md:w-1/3 text-center md:text-left mb-8 md:mb-0 sel">
         <h2 className="text-3xl font-semibold text-gray-800">

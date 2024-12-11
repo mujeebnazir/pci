@@ -4,20 +4,20 @@ import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import toast from "react-hot-toast";
 
 interface Product {
-  $id: string; // Unique identifier for the product
-  name: string; // Name of the product
-  description: string; // Product description
-  images: string[]; // Array of image identifiers
-  price: number; // Price of the product
-  category: string; // Product category
-  sizesAvailable: string[]; // Array of available sizes
+  $id: string;
+  name: string; 
+  description: string; 
+  images: string[]; 
+  price: number; 
+  category: string; 
+  sizesAvailable: string[]; 
 }
 
 interface CartItem {
-  id?: string; // Optional unique identifier
-  cartId?: string; // Optional cart identifier
-  product: Product; // Associated product object
-  quantity: number; // Quantity of the product in the cart
+  id?: string;
+  cartId?: string; 
+  product: Product; 
+  quantity: number; 
 }
 
 type CartItemProps = {
@@ -40,7 +40,7 @@ const CartItem: React.FC<CartItemProps> = ({
   return (
     <div className="flex items-center justify-between p-4 border border-gray-300 rounded-lg shadow-md">
       <img
-        src={item.product.images[0]} // Replace with actual placeholder
+        src={item.product.images[0]}
         alt={item.product.name}
         className="w-20 h-20 object-cover rounded"
       />

@@ -35,11 +35,9 @@ const useGetProduct = (
       setError(false);
       try {
         const data = await ProductService.getProduct(id);
-        console.log("data", data);
         setProduct(data);
         setIsLoading(false);
       } catch (error: any) {
-        console.error("Error fetching products:", error);
         setError(true);
       }
     };

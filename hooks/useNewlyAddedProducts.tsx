@@ -2,15 +2,14 @@ import { useState, useEffect } from "react";
 import ProductService from "@/lib/product"; // Adjust the import based on your file structure
 
 interface Product {
+  
     id: string | undefined;
     name: string;
     description: string;
     price: number;
     sizesAvailable: string[];
-    itemsCount: number;
     category: string;
     images: string[];
-    createdAt: string;
   }
 
 interface UseFetchNewlyAddedProductsResult {

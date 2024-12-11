@@ -1,6 +1,6 @@
 import { FocusCards } from "@/components/ui/focus-cards";
 
-export function CategorySection() {
+const  CategorySection =()=> {
   const cards = [
     {
       title: "Shawls",
@@ -37,3 +37,4 @@ export function CategorySection() {
     </>
   );
 }
+export default CategorySection;
