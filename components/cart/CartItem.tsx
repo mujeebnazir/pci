@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 interface Product {
   $id: string; // Unique identifier for the product
+  id: string; // Unique identifier for the product
   name: string; // Name of the product
   description: string; // Product description
   images: string[]; // Array of image identifiers
@@ -34,6 +35,8 @@ const CartItem: React.FC<CartItemProps> = ({
   onRemove,
 }) => {
   const handleRemoveItem = async () => {
+    console.log("item", item.id);
+
     onRemove(item.id as string);
     toast.success("Product removed from cart");
   };
@@ -66,7 +69,7 @@ const CartItem: React.FC<CartItemProps> = ({
         </button>
       </div>
       <button
-        onClick={handleRemoveItem}
+        onClick={(event) => onRemove(item.id || "")}
         className="text-red-500 ml-4 hover:text-red-800 transition"
       >
         <MdOutlineRemoveShoppingCart size={24} />

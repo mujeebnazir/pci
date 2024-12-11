@@ -9,7 +9,8 @@ import useProducts from "@/hooks/useProducts";
 import GiftsSection from "@/components/GiftSection";
 import WhyPCIBanner from "@/components/Banner";
 import HeroContent from "@/components/HeroContent";
-import {CategorySection} from "@/components/CategorySection";
+import { CategorySection } from "@/components/CategorySection";
+import LogoCarousel from "@/components/LogoCarousel";
 
 export default function Home() {
   const { newProducts, loading } = useFetchNewlyAddedProducts();
@@ -23,7 +24,6 @@ export default function Home() {
     const fetchCart = async () => {
       try {
         const session = await auth.checkUserStatus();
-        console.log("session", session);
         await store.initializeCart();
       } catch (err: any) {
         console.error("Error initializing cart:", err);
@@ -55,9 +55,13 @@ export default function Home() {
         <HeroContent />
       </section>
 
+      {/* {carousel} */}
+      <LogoCarousel />
+      {/* Gift Section */}
+      <GiftsSection />
       {/* New Arrivals Section */}
-      <section className="flex flex-col justify-center items-center pt-12 w-full bg-gray-50">
-        <span className="font-semibold text-3xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
+      <section className="flex flex-col justify-center items-center pt-12 w-full ">
+        <span className="font-semibold text-2xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
           New Arrivals
         </span>
         <div className="py-4 w-full">
@@ -68,7 +72,8 @@ export default function Home() {
           )}
         </div>
       </section>
-
+      {/*category section */}
+      <CategorySection />
       {/* Best Sellers Section */}
       <section className="flex flex-col justify-center items-center pt-12 w-full bg-white">
         <span className="font-semibold text-3xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
@@ -83,20 +88,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Gift Section */}
-      <GiftsSection />
-
       {/* Showcase Section */}
-      <section className="flex flex-col justify-center items-center p-12 w-full bg-gray-100">
+      <section className="flex flex-col justify-center items-center  w-full m-10">
         <div className="min-h-screen flex items-center justify-center">
           <Showcase images={images} />
         </div>
-      </section>
-      {/*category section */}
-      <CategorySection/>
-      {/* PCI Banner Section */}
-      <section className="mb-6 w-full bg-gray-50">
-        <WhyPCIBanner />
       </section>
     </div>
   );

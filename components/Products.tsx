@@ -19,13 +19,13 @@ type Product = {
 
 interface ProductsProps {
   products: Product[];
-  onClick?: () => void; // Optional click handler for products
+  onClick?: () => void;
 }
 
 const Products: React.FC<ProductsProps> = ({ products, onClick }) => {
   const [visibleProductsCount, setVisibleProductsCount] = useState(8);
   const visibleProducts = products.slice(0, visibleProductsCount);
-  
+
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
@@ -43,7 +43,7 @@ const Products: React.FC<ProductsProps> = ({ products, onClick }) => {
               variants={cardVariants}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <LazyCard product={product}  />
+              <LazyCard product={product} />
             </motion.div>
           ))}
         </Suspense>
@@ -51,7 +51,7 @@ const Products: React.FC<ProductsProps> = ({ products, onClick }) => {
 
       {visibleProductsCount < products.length && (
         <motion.button
-          onClick={() => setVisibleProductsCount(prev => prev + 8)}
+          onClick={() => setVisibleProductsCount((prev) => prev + 8)}
           className="px-4 py-2 border bg-black text-sm font-semibold text-white rounded hover:bg-gray-700"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

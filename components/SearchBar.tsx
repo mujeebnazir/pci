@@ -7,9 +7,9 @@ import Products from "./Products";
 import Loading from "./Loading";
 
 const SearchBar = () => {
-  const [searchQuery, setSearchQuery] = useState(""); // State for search input
-  const [currentPage, setCurrentPage] = useState(1); // State for pagination
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { products, loadingProducts, error } = useSearchProducts({
     query: searchQuery,
@@ -22,7 +22,7 @@ const SearchBar = () => {
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setCurrentPage(1); // Reset to first page when a new search is made
+    setCurrentPage(1);
   };
 
   const closeModal = () => {
@@ -42,7 +42,7 @@ const SearchBar = () => {
         <input
           type="search"
           id="default-search"
-          className="block w-full p-2 ps-5 text-sm rounded-lg text-gray-900 border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200"
+          className="block w-full p-2 ps-5 text-sm rounded text-gray-900 border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white transition-all duration-200"
           placeholder="Search Shawls, Handbags, Wallets..."
           value={searchQuery}
           onChange={handleSearchChange}
