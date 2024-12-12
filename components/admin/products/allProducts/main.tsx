@@ -119,6 +119,43 @@ const AllProducts = () => {
     );
   };
 
+  if (loadingProducts) {
+    return (
+      <div className="bg-gray-100 text-black py-5">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-4">
+            <div className="h-10 bg-gray-200 rounded-lg w-3/4 mx-auto mb-2 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded-lg w-1/2 mx-auto animate-pulse"></div>
+          </div>
+
+          <div className="mb-4">
+            <div className="h-10 bg-gray-200 rounded-lg w-full animate-pulse"></div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <div className="space-y-4">
+              <div className="h-12 bg-gray-200 rounded-lg w-full animate-pulse"></div>
+              {[...Array(5)].map((_, idx) => (
+                <div key={idx} className="flex space-x-4">
+                  <div className="h-16 bg-gray-200 rounded-lg w-1/4 animate-pulse"></div>
+                  <div className="h-16 bg-gray-200 rounded-lg w-1/4 animate-pulse"></div>
+                  <div className="h-16 bg-gray-200 rounded-lg w-1/4 animate-pulse"></div>
+                  <div className="h-16 bg-gray-200 rounded-lg w-1/4 animate-pulse"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-center items-center mt-4 gap-2">
+            <div className="h-10 bg-gray-200 rounded-lg w-24 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded-lg w-32 animate-pulse"></div>
+            <div className="h-10 bg-gray-200 rounded-lg w-24 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-100 text-black py-5">
       <div className="container mx-auto px-4 sm:px-6">
@@ -160,15 +197,7 @@ const AllProducts = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loadingProducts ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4">
-                    <p className="text-gray-500 font-medium text-lg">
-                      Loading products...
-                    </p>
-                  </TableCell>
-                </TableRow>
-              ) : filteredProducts.length === 0 ? (
+              {filteredProducts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-4">
                     <p className="text-gray-500 font-medium text-lg">
