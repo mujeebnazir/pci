@@ -6,7 +6,7 @@ const GiftsSection = dynamic(() => import("@/components/GiftSection"), {
   ssr: false,
 });
 const HeroContent = dynamic(() => import("@/components/HeroContent"), {
-  ssr: false,
+  ssr: true,
 });
 const CategorySection = dynamic(() => import("@/components/CategorySection"), {
   ssr: false,
