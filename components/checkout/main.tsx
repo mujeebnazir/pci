@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import useAuthStore from "@/zustand/authStore";
 import OrderService from "@/lib/orders";
-import { PaymentMode, Status } from '@/lib/orders';
+import { PaymentMode, Status } from "@/lib/orders";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -65,9 +65,9 @@ const InputWithIcon = ({
       <Icon size={16} className="text-gray-500" />
       {label}
     </Label>
-    <Input 
-      id={id} 
-      type={type} 
+    <Input
+      id={id}
+      type={type}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
@@ -75,14 +75,26 @@ const InputWithIcon = ({
   </div>
 );
 
-const PaymentMethodCard = ({ icon: Icon, title, description, value, selected, onSelect }: any) => (
-  <div 
-    className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${selected ? 'border-primary' : ''}`}
+const PaymentMethodCard = ({
+  icon: Icon,
+  title,
+  description,
+  value,
+  selected,
+  onSelect,
+}: any) => (
+  <div
+    className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer ${
+      selected ? "border-primary" : ""
+    }`}
     onClick={() => onSelect(value)}
   >
     <div className="flex items-center space-x-4 flex-1">
       <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-        <Icon className={`${selected ? 'text-primary' : 'text-gray-600'}`} size={20} />
+        <Icon
+          className={`${selected ? "text-primary" : "text-gray-600"}`}
+          size={20}
+        />
       </div>
       <div className="flex-1">
         <p className="font-medium">{title}</p>
@@ -93,6 +105,7 @@ const PaymentMethodCard = ({ icon: Icon, title, description, value, selected, on
 );
 
 const Checkout = () => {
+  const { removeItems } = useCartStore();
   const [step, setStep] = useState(1);
   const [personalInfo, setPersonalInfo] = useState({
     firstName: "",
@@ -107,9 +120,12 @@ const Checkout = () => {
     postalCode: "",
     country: "",
   });
-  const [selectedPaymentMode, setSelectedPaymentMode] = useState<PaymentMode>(PaymentMode.COD);
-  const { items, totalMRP, discountOnMRP, deliveryFee, totalAmount } = useCartStore((state) => state);
-  const {session} = useAuthStore((state) => state);
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState<PaymentMode>(
+    PaymentMode.COD
+  );
+  const { items, totalMRP, discountOnMRP, deliveryFee, totalAmount } =
+    useCartStore((state) => state);
+  const { session } = useAuthStore((state) => state);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -155,7 +171,11 @@ const Checkout = () => {
     }
     return true;
   };
-
+  console.log("items", items);
+  const cartItemIds = items
+    .map((item) => item.id)
+    .filter((id): id is string => id !== undefined);
+  console.log("cartItemIds", cartItemIds);
   const handlePlaceOrder = async () => {
     if (!session?.$id || !session?.cartId) {
       toast.error("Please login to place order");
@@ -166,13 +186,16 @@ const Checkout = () => {
 
     setIsLoading(true);
     console.log("items", items);
-    const cartItemIds = items.map(item => item.id).filter((id): id is string => id !== undefined);
+    const cartItemIds = items
+      .map((item) => item.id)
+      .filter((id): id is string => id !== undefined);
     console.log("cartItemIds", cartItemIds);
 
     const orderData = {
       user: session.$id,
       cartItem: cartItemIds,
       paymentMode: selectedPaymentMode,
+      productDetails: items.map((item) => JSON.stringify(item)),
       status: Status.PENDING,
       firstName: personalInfo.firstName,
       lastName: personalInfo.lastName,
@@ -187,7 +210,10 @@ const Checkout = () => {
 
     try {
       const response = await OrderService.createOrderItem(orderData);
+
       toast.success("Order placed successfully!");
+      // removeItem(cartItemIds);
+      removeItems(cartItemIds);
       console.log("response", response);
     } catch (error: any) {
       toast.error(error.message || "Error placing order");
@@ -196,7 +222,10 @@ const Checkout = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, section: string) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    section: string
+  ) => {
     const { id, value } = e.target;
     if (section === "personalInfo") {
       setPersonalInfo({ ...personalInfo, [id]: value });
@@ -278,7 +307,9 @@ const Checkout = () => {
                             {item.product.name}
                           </p>
                           <div className="flex items-center justify-between mt-1">
-                            <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                            <p className="text-sm text-gray-500">
+                              Qty: {item.quantity}
+                            </p>
                             <p className="font-semibold">
                               ₹{item.product.price * item.quantity}
                             </p>
@@ -363,7 +394,9 @@ const Checkout = () => {
                       id="firstName"
                       placeholder="John"
                       value={personalInfo.firstName}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "personalInfo")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(e, "personalInfo")
+                      }
                     />
                     <InputWithIcon
                       icon={User}
@@ -371,7 +404,9 @@ const Checkout = () => {
                       id="lastName"
                       placeholder="Doe"
                       value={personalInfo.lastName}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "personalInfo")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(e, "personalInfo")
+                      }
                     />
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
@@ -382,7 +417,9 @@ const Checkout = () => {
                       type="email"
                       placeholder="john@example.com"
                       value={personalInfo.email}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "personalInfo")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(e, "personalInfo")
+                      }
                     />
                     <InputWithIcon
                       icon={Phone}
@@ -391,7 +428,9 @@ const Checkout = () => {
                       type="tel"
                       placeholder="+1 (555) 000-0000"
                       value={personalInfo.phone}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "personalInfo")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(e, "personalInfo")
+                      }
                     />
                   </div>
                 </CardContent>
@@ -416,7 +455,9 @@ const Checkout = () => {
                     id="address"
                     placeholder="123 Main St"
                     value={shippingAddress.address}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "shippingAddress")}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(e, "shippingAddress")
+                    }
                   />
                   <div className="grid md:grid-cols-3 gap-4">
                     <InputWithIcon
@@ -425,7 +466,9 @@ const Checkout = () => {
                       id="city"
                       placeholder="New York"
                       value={shippingAddress.city}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "shippingAddress")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(e, "shippingAddress")
+                      }
                     />
                     <InputWithIcon
                       icon={MapPin}
@@ -433,7 +476,9 @@ const Checkout = () => {
                       id="state"
                       placeholder="NY"
                       value={shippingAddress.state}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "shippingAddress")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(e, "shippingAddress")
+                      }
                     />
                     <InputWithIcon
                       icon={MapPinned}
@@ -441,7 +486,9 @@ const Checkout = () => {
                       id="postalCode"
                       placeholder="10001"
                       value={shippingAddress.postalCode}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "shippingAddress")}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange(e, "shippingAddress")
+                      }
                     />
                   </div>
                   <InputWithIcon
@@ -450,7 +497,9 @@ const Checkout = () => {
                     id="country"
                     placeholder="United States"
                     value={shippingAddress.country}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e, "shippingAddress")}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(e, "shippingAddress")
+                    }
                   />
                 </CardContent>
               </Card>

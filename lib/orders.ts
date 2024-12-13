@@ -1,10 +1,10 @@
 import client from "@/utils/appwrite";
-import { Databases, ID } from "appwrite";
+import { Databases, ID , Query , Storage } from "appwrite";
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
 const ORDER_ITEMS_COLLECTION_ID =
   process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_ORDER_ITEMS ?? "";
-
+const BUCKET_ID = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID ?? "";
 export enum PaymentMode {
   COD = "COD",
   UPI = "UPI",
@@ -21,6 +21,7 @@ export enum Status {
 interface OrderItem {
   user: string;
   cartItem: string[];
+  productDetails?: string[];
   paymentMode: PaymentMode;
   status: Status;
   firstName: string;
@@ -36,9 +37,10 @@ interface OrderItem {
 
 class OrderService {
   private databases: Databases;
-
+  private storage: Storage;
   constructor() {
     this.databases = new Databases(client);
+    this.storage = new Storage(client);
   }
 
   /**
@@ -67,6 +69,7 @@ class OrderService {
    * @param payload - The order item payload
    */
   async createOrderItem(payload: OrderItem) {
+    console.log("payload", payload);
     try {
       this.validatePayload(payload);
 
@@ -76,11 +79,132 @@ class OrderService {
         ID.unique(),
         payload
       );
+     
+
       return response;
     } catch (error: any) {
       console.error("Error creating order item:", error.message);
       throw error;
     }
+  }
+
+  async getOrderItemsByUserID(userID: string) {
+    try {
+      // Fetch documents related to the user
+      const response = await this.databases.listDocuments(
+        DATABASE_ID,
+        ORDER_ITEMS_COLLECTION_ID,
+        [Query.equal("user", userID)]
+      );
+      
+      console.log("response", response);
+  
+      // Parse productDetails and map it correctly
+      const userOrders = response.documents.map((document: any) => {
+        const productDetails = document.productDetails.map((product: any) =>
+          JSON.parse(product)
+        );
+        console.log("productDetails", productDetails);
+        return {
+          orderId: document.$id,
+          status: document.status,
+          createdAt: document.$createdAt,
+          paymentMode: document.paymentMode,
+          totalQuantity: productDetails.reduce(
+            (sum: number, item: any) => sum + item.quantity,
+            0
+          ),
+          totalPrice: productDetails.reduce(
+            (sum: number, item: any) =>
+              sum + item.product.price * item.quantity,
+            0
+          ),
+          items: productDetails.map((product: any) => ({
+            name: product.product.name,
+            category: product.product.category,
+            description: product.product.description,
+            price: product.product.price,
+            quantity: product.quantity,
+            totalPrice: product.product.price * product.quantity,
+            images: product.product.images
+            
+          })),
+          
+        };
+      });
+      console.log("userOrders", userOrders);
+      return userOrders;
+    } catch (error: any) {
+      console.error("Error fetching order items:", error.message);
+      throw error;
+    }
+  }
+  
+  
+  async getAllOrdersForAdmin() {
+    try {
+      const response = await this.databases.listDocuments(
+        DATABASE_ID,
+        ORDER_ITEMS_COLLECTION_ID
+      );
+      
+      console.log("response", response);
+  
+      const adminOrders = response.documents.map((document: any) => {
+        const productDetails = document.productDetails.map((product: any) =>
+          JSON.parse(product)
+        );
+        console.log("productDetails", productDetails);
+        return {
+          orderId: document.$id,
+          status: document.status,
+          createdAt: document.$createdAt,
+          firstName: document.firstName,
+          lastName: document.lastName,
+          streetAddress: document.streetAddress,
+          city: document.city,
+          postalCode: document.postalCode,
+          paymentMode: document.paymentMode,
+          totalQuantity: productDetails.reduce(
+            (sum: number, item: any) => sum + item.quantity,
+            0
+          ),
+          totalPrice: productDetails.reduce(
+            (sum: number, item: any) =>
+              sum + item.product.price * item.quantity,
+            0
+          ),
+          items: productDetails.map((product: any) => ({
+            name: product.product.name,
+            category: product.product.category,
+            description: product.product.description,
+            price: product.product.price,
+            quantity: product.quantity,
+            totalPrice: product.product.price * product.quantity,
+            images: product.product.images
+          }))
+        };
+      });
+      console.log("adminOrders", adminOrders);
+      return adminOrders;
+    } catch (error: any) {
+      console.error("Error fetching all orders:", error.message);
+      throw error;
+    }
+  }
+
+  async updateOrderStatus(orderId: string, status: string) {
+    try {
+      const response = await this.databases.updateDocument(DATABASE_ID, ORDER_ITEMS_COLLECTION_ID, orderId, { status });
+      return response;
+    } catch (error: any) {
+      console.error("Error updating order status:", error.message);
+      throw error;
+    }
+  }
+
+  async getAdminInsights(){
+    
   }
 }
 
