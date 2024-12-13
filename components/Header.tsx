@@ -47,42 +47,61 @@ const Header: React.FC = () => {
     router.push("/cart");
   };
   return (
-    <div className="fixed top-0   w-full flex flex-col  bg-white items-center mx-auto pt-2 shadow shadow-stone-300">
-      <div className="flex flex-row items-center justify-between w-full mx-auto pb-2">
+    <div className="fixed top-0 w-full flex flex-col bg-white items-center mx-auto pt-2 shadow shadow-stone-300 z-1000">
+      <div className="container px-4 flex flex-col md:flex-row items-center justify-between w-full pb-2 space-y-4 md:space-y-0">
         {/* Left Section: Logo and Menu Icon */}
-        <div className="flex items-center ml-4 md:ml-20">
-          <div
-            className="lg:hidden flex items-center mr-4 text-black"
-            onClick={toggleSidebar}
-          >
-            <CgMenu size={28} color="black" className="cursor-pointer mr-4" />
+        <div className="flex items-center w-full md:w-auto justify-between md:justify-start">
+          <div className="flex items-center">
+            <div
+              className="lg:hidden flex items-center mr-4 text-black"
+              onClick={toggleSidebar}
+            >
+              <CgMenu size={28} color="black" className="cursor-pointer" />
+            </div>
+            <Link href="/" className="flex items-center justify-center ">
+              <Image
+                src="/logo.svg"
+                alt="logo"
+                width={100}
+                height={100}
+                className="scale-125 md:scale-150 hover:scale-[1.35] md:hover:scale-160 transition cursor-pointer"
+              />
+            </Link>
           </div>
-          <Link href="/">
-            <Image
-              src="/logo.svg"
-              alt="logo"
-              width={100}
-              height={100}
-              className="scale-150 hover:scale-160 transition cursor-pointer"
-            />
-          </Link>
+          
+          {/* Mobile Icons */}
+          <div className="flex md:hidden items-center space-x-4">
+            <div className="relative cursor-pointer" onClick={handleCartClick}>
+              <MdShoppingCart
+                size={30}
+                className="transition scale-100 hover:scale-110 cursor-pointer"
+                color="black"
+              />
+              {itemsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold border-2 border-white">
+                  {itemsCount}
+                </span>
+              )}
+            </div>
+            <UserProfile />
+          </div>
         </div>
 
         {/* Center Section: Search Bar */}
-        <div className="hidden lg:block w-[35%] ">
+        <div className="w-full md:w-auto md:flex-1 md:max-w-xl px-4">
           <SearchBar />
         </div>
 
-        {/* Right Section: Icons */}
-        <div className="flex items-center space-x-4 mr-4 md:mr-20 cu">
+        {/* Desktop Icons */}
+        <div className="hidden md:flex items-center space-x-6">
           <div className="relative cursor-pointer" onClick={handleCartClick}>
             <MdShoppingCart
               size={30}
-              className="transition scale-100 hover:scale-110 mr-4 cursor-pointer"
+              className="transition scale-100 hover:scale-110 cursor-pointer"
               color="black"
             />
             {itemsCount > 0 && (
-              <span className="absolute top-0 right-0 -translate-x-[1/2] -translate-y-1/2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold border-2 border-white">
+              <span className="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold border-2 border-white">
                 {itemsCount}
               </span>
             )}
@@ -95,13 +114,15 @@ const Header: React.FC = () => {
       <AnimatePresence>
         {showNavbar && (
           <motion.div
-            className="hidden lg:block mb-2"
+            className="hidden lg:block w-full border-t border-gray-100"
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -50, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Navbar />
+            <div className="container mx-auto py-2">
+              <Navbar />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -122,7 +143,7 @@ const Header: React.FC = () => {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              onClick={(e) => e.stopPropagation()} // Prevents click events from closing sidebar
+              onClick={(e) => e.stopPropagation()}
             >
               <Navbar />
             </motion.div>

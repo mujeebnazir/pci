@@ -21,6 +21,7 @@ export enum Status {
 interface OrderItem {
   user: string;
   cartItem: string[];
+  productDetails?: string[];
   paymentMode: PaymentMode;
   status: Status;
   firstName: string;
@@ -68,6 +69,7 @@ class OrderService {
    * @param payload - The order item payload
    */
   async createOrderItem(payload: OrderItem) {
+    console.log("payload", payload);
     try {
       this.validatePayload(payload);
 
@@ -77,6 +79,8 @@ class OrderService {
         ID.unique(),
         payload
       );
+     
+
       return response;
     } catch (error: any) {
       console.error("Error creating order item:", error.message);
@@ -86,35 +90,49 @@ class OrderService {
 
   async getOrderItemsByUserID(userID: string) {
     try {
+      // Fetch documents related to the user
       const response = await this.databases.listDocuments(
         DATABASE_ID,
         ORDER_ITEMS_COLLECTION_ID,
         [Query.equal("user", userID)]
       );
+      
+      console.log("response", response);
   
-      // Refine the response for the profile display
-      const userOrders = response.documents.map((document: any) => ({
-        orderId: document.$id,
-        status: document.status,
-        createdAt: document.$createdAt,
-        paymentMode: document.paymentMode,
-        totalQuantity: document.cartItem.reduce((sum: number, item: any) => sum + item.quantity, 0),
-        totalPrice: document.cartItem.reduce((sum: number, item: any) => sum + item.product.price * item.quantity, 0),
-        items: document.cartItem.map((cart: any) => ({
-          name: cart.product.name,
-          category: cart.product.category,
-          description: cart.product.description,
-          price: cart.product.price,
-          quantity: cart.quantity,
-          totalPrice: cart.product.price * cart.quantity,
-          //file preview
-          images: cart.product.images.map((image: any) => {
-            const file = this.storage.getFileView(BUCKET_ID, image);
-            return file;
-          }  ), 
-        })),
-      }));
-  
+      // Parse productDetails and map it correctly
+      const userOrders = response.documents.map((document: any) => {
+        const productDetails = document.productDetails.map((product: any) =>
+          JSON.parse(product)
+        );
+        console.log("productDetails", productDetails);
+        return {
+          orderId: document.$id,
+          status: document.status,
+          createdAt: document.$createdAt,
+          paymentMode: document.paymentMode,
+          totalQuantity: productDetails.reduce(
+            (sum: number, item: any) => sum + item.quantity,
+            0
+          ),
+          totalPrice: productDetails.reduce(
+            (sum: number, item: any) =>
+              sum + item.product.price * item.quantity,
+            0
+          ),
+          items: productDetails.map((product: any) => ({
+            name: product.product.name,
+            category: product.product.category,
+            description: product.product.description,
+            price: product.product.price,
+            quantity: product.quantity,
+            totalPrice: product.product.price * product.quantity,
+            images: product.product.images
+            
+          })),
+          
+        };
+      });
+      console.log("userOrders", userOrders);
       return userOrders;
     } catch (error: any) {
       console.error("Error fetching order items:", error.message);
@@ -122,30 +140,53 @@ class OrderService {
     }
   }
   
+  
   async getAllOrdersForAdmin() {
     try {
-      const response = await this.databases.listDocuments(DATABASE_ID, ORDER_ITEMS_COLLECTION_ID);
-
-      // Map the response to include only relevant data
-      const orders = response.documents.map((doc: any) => ({
-        $id: doc.$id,
-        firstName: doc.firstName,
-        lastName: doc.lastName,
-        streetAddress: doc.streetAddress,
-        city: doc.city,
-        postalCode: doc.postalCode,
-        paymentMode: doc.paymentMode,
-        status: doc.status,
-        cartItem: doc.cartItem.map((item: any) => ({
-          product: {
-            price: item.product.price
-          },
-          quantity: item.quantity
-        }))
-      }));
-      console.log(orders);
-
-      return orders;
+      const response = await this.databases.listDocuments(
+        DATABASE_ID,
+        ORDER_ITEMS_COLLECTION_ID
+      );
+      
+      console.log("response", response);
+  
+      const adminOrders = response.documents.map((document: any) => {
+        const productDetails = document.productDetails.map((product: any) =>
+          JSON.parse(product)
+        );
+        console.log("productDetails", productDetails);
+        return {
+          orderId: document.$id,
+          status: document.status,
+          createdAt: document.$createdAt,
+          firstName: document.firstName,
+          lastName: document.lastName,
+          streetAddress: document.streetAddress,
+          city: document.city,
+          postalCode: document.postalCode,
+          paymentMode: document.paymentMode,
+          totalQuantity: productDetails.reduce(
+            (sum: number, item: any) => sum + item.quantity,
+            0
+          ),
+          totalPrice: productDetails.reduce(
+            (sum: number, item: any) =>
+              sum + item.product.price * item.quantity,
+            0
+          ),
+          items: productDetails.map((product: any) => ({
+            name: product.product.name,
+            category: product.product.category,
+            description: product.product.description,
+            price: product.product.price,
+            quantity: product.quantity,
+            totalPrice: product.product.price * product.quantity,
+            images: product.product.images
+          }))
+        };
+      });
+      console.log("adminOrders", adminOrders);
+      return adminOrders;
     } catch (error: any) {
       console.error("Error fetching all orders:", error.message);
       throw error;

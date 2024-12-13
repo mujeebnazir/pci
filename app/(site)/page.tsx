@@ -57,17 +57,22 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full items-center justify-center rounded-md bg-white">
-      {/* Hero Section */}
+      {/* 1. Hero Section - First impression and main value proposition */}
       <section className="w-full">
         <HeroContent />
       </section>
 
-      {/* {carousel} */}
+      {/* 2. Logo Carousel - Establish credibility with brand associations */}
       <LogoCarousel />
-      {/* Gift Section */}
-      <GiftsSection />
-      {/* New Arrivals Section */}
-      <section className="flex flex-col justify-center items-center pt-12 w-full ">
+
+      {/* 3. Why Choose Us Banner - Highlight unique value propositions */}
+      <WhyPCIBanner />
+
+      {/* 4. Category Section - Help users navigate product categories */}
+      <CategorySection />
+
+      {/* 5. New Arrivals - Showcase fresh inventory */}
+      <section className="flex flex-col justify-center items-center pt-12 w-full">
         <span className="font-semibold text-2xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
           New Arrivals
         </span>
@@ -79,9 +84,8 @@ export default function Home() {
           )}
         </div>
       </section>
-      {/*category section */}
-      <CategorySection />
-      {/* Best Sellers Section */}
+
+      {/* 6. Best Sellers - Social proof and popular items */}
       <section className="flex flex-col justify-center items-center pt-12 w-full bg-white">
         <span className="font-semibold text-3xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
           Best Sellers
@@ -95,8 +99,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Showcase Section */}
-      <section className="flex flex-col justify-center items-center  w-full m-10">
+      {/* 7. Our Top Collections - Curated product collections */}
+      <OurTopCollections />
+
+      {/* 8. Gift Section - Special promotions and gift ideas */}
+      <GiftsSection />
+
+      {/* 9. Visual Showcase - End with engaging visuals */}
+      <section className="flex flex-col justify-center items-center w-full m-10">
         <div className="min-h-screen flex items-center justify-center">
           <Showcase images={images} />
         </div>
