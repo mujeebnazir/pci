@@ -95,6 +95,22 @@ class CartItemService {
       throw new Error("Error removing cart item");
     }
   }
+  async removeCartItems(ids: string[]): Promise<object[]> {
+    return Promise.all(
+      ids.map(async (id) => {
+        try {
+          return await this.databases.deleteDocument(
+            process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+            process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
+            id
+          );
+        } catch (error: any) {
+          console.error(`Error removing cart item with ID ${id}:`, error.message);
+          throw new Error(`Error removing cart item with ID ${id}`);
+        }
+      })
+    );
+  }
 
   async getCartItems(): Promise<CartItem[]> {
     try {

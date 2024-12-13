@@ -23,21 +23,29 @@ import {
 import OrderService from "@/lib/orders";
 import { toast } from "react-hot-toast";
 
+interface OrderItem {
+  name: string;
+  category: string;
+  description: string;
+  images: string[];
+  price: number;
+  quantity: number;
+  totalPrice: number;
+}
+
 interface Order {
-  $id: string;
+  orderId: string;
+  status: string;
+  createdAt: string;
   firstName: string;
   lastName: string;
   streetAddress: string;
   city: string;
   postalCode: string;
   paymentMode: string;
-  status: string;
-  cartItem: Array<{
-    product: {
-      price: number;
-    };
-    quantity: number;
-  }>;
+  totalQuantity: number;
+  totalPrice: number;
+  items: OrderItem[];
 }
 
 const ViewOrders = () => {
@@ -49,7 +57,7 @@ const ViewOrders = () => {
     const getAllOrders = async () => {
       try {
         const ordersData = await OrderService.getAllOrdersForAdmin();
-        setOrders(ordersData as unknown as Order[]);
+        setOrders(ordersData);
       } catch (error) {
         toast.error("Failed to fetch orders");
         console.error("Error fetching orders:", error);
@@ -63,10 +71,10 @@ const ViewOrders = () => {
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     setIsUpdating(orderId);
     try {
-      await OrderService.updateOrderStatus(orderId, newStatus as any);
+      await OrderService.updateOrderStatus(orderId, newStatus);
       setOrders(
         orders.map((order) =>
-          order.$id === orderId ? { ...order, status: newStatus } : order
+          order.orderId === orderId ? { ...order, status: newStatus } : order
         )
       );
       toast.success("Order status updated successfully");
@@ -137,9 +145,9 @@ const ViewOrders = () => {
               </TableRow>
             ) : (
               orders.map((order) => (
-                <TableRow key={order.$id}>
+                <TableRow key={order.orderId}>
                   <TableCell className="font-medium">
-                  #{order.$id.slice(-8)}
+                    #{order.orderId.slice(-8)}
                   </TableCell>
                   <TableCell>
                     {order.firstName} {order.lastName}
@@ -169,9 +177,9 @@ const ViewOrders = () => {
                   <TableCell>
                     <Select
                       onValueChange={(value) =>
-                        handleStatusChange(order.$id, value)
+                        handleStatusChange(order.orderId, value)
                       }
-                      disabled={isUpdating === order.$id}
+                      disabled={isUpdating === order.orderId}
                     >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Change Status" />
@@ -188,13 +196,7 @@ const ViewOrders = () => {
                     </Select>
                   </TableCell>
                   <TableCell className="text-right font-semibold">
-                    ₹
-                    {order.cartItem
-                      .reduce(
-                        (sum, item) => sum + item.product.price * item.quantity,
-                        0
-                      )
-                      .toLocaleString()}
+                    ₹{order.totalPrice.toLocaleString()}
                   </TableCell>
                 </TableRow>
               ))

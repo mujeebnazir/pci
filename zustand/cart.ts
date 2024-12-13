@@ -34,6 +34,7 @@ interface CartState {
   removeItem: (id: string) => Promise<void>; // Method to remove an item by product ID
   onIncrease: (id: string) => Promise<void>; // Method to increase the quantity of a cart item
   onDecrease: (id: string) => Promise<void>; // Method to decrease the quantity of a cart item
+  removeItems: (ids: string[]) => Promise<void>; // Method to remove multiple items by product ID
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -65,23 +66,22 @@ export const useCartStore = create<CartState>((set, get) => ({
       const totalAmount = totalMRP - discountOnMRP + deliveryFee;
       const cartItemsData: CartItemData[] = items.map((item) => ({
         ...item,
-
         cartId: item.cartId,
         product: {
-          $id: item.product.$id, // Ensure this property exists in `item.product`
-          id: item.product.$id, // Map correctly to match the `Product` type
+          $id: item.product.$id,
+          id: item.product.$id,
           name: item.product.name,
           price: item.product.price,
-          description: (item.product as any).description || "", // Default value if missing
-          category: (item.product as any).category || "", // Default value if missing
-          sizesAvailable: (item.product as any).sizesAvailable || [], // Default value if missing
-          images: item.product.images || [], // Add this property, providing a default if missing
+          description: (item.product as any).description || "",
+          category: (item.product as any).category || "",
+          sizesAvailable: (item.product as any).sizesAvailable || [],
+          images: item.product.images || [],
         },
         quantity: item.quantity,
       }));
 
       set({
-        items: cartItemsData, // Update the cart items
+        items: cartItemsData,
         totalMRP,
         discountOnMRP,
         totalAmount,
@@ -95,7 +95,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   // **Add Item**
-  addItem: async (item) => {
+  addItem: async (item: CartItemData) => {
     try {
       set({ isLoading: true, error: null });
       const success = await CartItemService.addCartItem(
@@ -103,11 +103,14 @@ export const useCartStore = create<CartState>((set, get) => ({
         item.quantity
       );
       if (success) {
-        const updatedItems = [...get().items, success];
+        const updatedItems: CartItemData[] = [
+          ...get().items,
+          success as CartItemData,
+        ];
         console.log("updatedItems", updatedItems);
 
         const totalMRP = updatedItems.reduce(
-          (sum, item) => sum + (item.product.price as number) * item.quantity,
+          (sum, item) => sum + item.product.price * item.quantity,
           0
         );
         const discountOnMRP = totalMRP * 0.2;
@@ -135,6 +138,37 @@ export const useCartStore = create<CartState>((set, get) => ({
       const success = await CartItemService.removeCartItem(id);
       if (success) {
         const updatedItems = get().items.filter((item) => item.id !== id);
+
+        const totalMRP = updatedItems.reduce(
+          (sum, item) => sum + (item.product.price as number) * item.quantity,
+          0
+        );
+        const discountOnMRP = totalMRP * 0.2;
+        const totalAmount = totalMRP - discountOnMRP + get().deliveryFee;
+
+        set({
+          items: updatedItems,
+          totalMRP,
+          discountOnMRP,
+          totalAmount,
+          itemsCount: updatedItems.length,
+          isLoading: false,
+        });
+      }
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+  removeItems: async (ids: string[]) => {
+    try {
+      set({ isLoading: true, error: null });
+
+      const successResponses = await CartItemService.removeCartItems(ids);
+
+      if (successResponses) {
+        const updatedItems = get().items.filter(
+          (item) => !ids.includes(item.id ?? "")
+        );
 
         const totalMRP = updatedItems.reduce(
           (sum, item) => sum + (item.product.price as number) * item.quantity,

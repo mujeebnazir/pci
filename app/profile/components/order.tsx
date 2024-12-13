@@ -35,6 +35,7 @@ const Orders = () => {
     try {
       if (session?.$id) {
         const orderItems = await OrderService.getOrderItemsByUserID(session.$id);
+        console.log("orderItems from frontend ", orderItems);
         return orderItems;
       }
       return [];
