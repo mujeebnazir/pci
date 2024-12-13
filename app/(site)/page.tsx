@@ -15,7 +15,6 @@ const WhyPCIBanner = dynamic(() => import("@/components/Banner"), {
   ssr: false,
 });
 import { OurTopCollections } from "@/components/OurTopCollections";
-
 import { useCartStore } from "@/zustand/cart";
 import { useEffect, useMemo } from "react";
 import useAuthStore from "@/zustand/authStore";
@@ -37,7 +36,6 @@ export default function Home() {
         const session = await auth.checkUserStatus();
         await store.initializeCart();
       } catch (err: any) {
-        console.error("Error initializing cart:", err);
         throw new Error("Error initializing cart");
       }
     };
@@ -72,26 +70,19 @@ export default function Home() {
           New Arrivals
         </span>
         <div className="py-4 w-full">
-          {isLoading ? (
-            <Loading/>
-          ) : (
-            <Products products={newProducts as any} />
-          )}
+          {isLoading ? <Loading /> : <Products products={newProducts as any} />}
         </div>
       </section>
       {/*category section */}
       <CategorySection />
+      <OurTopCollections />
       {/* Best Sellers Section */}
       <section className="flex flex-col justify-center items-center pt-12 w-full bg-white">
         <span className="font-semibold text-3xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
           Best Sellers
         </span>
         <div className="py-4 w-full">
-          {isLoading ? (
-            <Loading/>
-          ) : (
-            <Products products={products} />
-          )}
+          {isLoading ? <Loading /> : <Products products={products} />}
         </div>
       </section>
 

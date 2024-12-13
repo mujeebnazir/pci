@@ -1,8 +1,6 @@
+"use client";
 import React from "react";
-import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 const LuxuryHeroSection = () => {
   return (
@@ -24,14 +22,13 @@ const LuxuryHeroSection = () => {
       {/* Right Side: Image */}
       <div className="w-full md:w-1/2 h-64 md:h-auto relative overflow-hidden">
         <Image
-          src="/hero.jpg" // Replace with your actual image path
+          src="/hero.jpg"
           alt="Hero Background"
-          layout="responsive"
-          width={700} // Replace with your image aspect ratio (e.g., width/height)
-          height={900} // Use "fill" for full control over scaling
-          objectFit="cover"
-          className="rounded scale-110" // Zoom effect
-          objectPosition="center"
+          width={700}
+          height={900}
+          style={{ objectFit: "cover", objectPosition: "center" }}
+          className="rounded scale-110"
+          priority
         />
       </div>
 

@@ -51,7 +51,6 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const items = await CartItemService.getCartItems();
-      console.log("items from cart", items);
 
       if (!items || !Array.isArray(items)) {
         throw new Error("Failed to load cart items.");
@@ -104,7 +103,6 @@ export const useCartStore = create<CartState>((set, get) => ({
       );
       if (success) {
         const updatedItems = [...get().items, success];
-        console.log("updatedItems", updatedItems);
 
         const totalMRP = updatedItems.reduce(
           (sum, item) => sum + (item.product.price as number) * item.quantity,
@@ -129,8 +127,6 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   removeItem: async (id) => {
     try {
-      console.log("id", id);
-
       set({ isLoading: true, error: null });
       const success = await CartItemService.removeCartItem(id);
       if (success) {

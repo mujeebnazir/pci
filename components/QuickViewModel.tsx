@@ -5,7 +5,6 @@ import ProductPage from "./ProductPage";
 import useGetProduct from "@/hooks/usegetProduct";
 
 const QuickViewModel = ({ productId }: { productId: string }) => {
-  console.log("productId", productId);
   const quickModel = useQuickModel();
   const { product } = useGetProduct(productId ?? "");
 

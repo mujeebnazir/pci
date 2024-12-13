@@ -63,7 +63,8 @@ const Header: React.FC = () => {
               alt="logo"
               width={100}
               height={100}
-              className="scale-150 hover:scale-160 transition cursor-pointer"
+              className="h-auto w-auto scale-100 hover:scale-105 transition cursor-pointer"
+              priority
             />
           </Link>
         </div>
