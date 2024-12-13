@@ -27,7 +27,8 @@ export const Card = React.memo(
         src={card.src}
         alt={card.title}
         fill
-        className="object-cover absolute inset-0 rounded-lg hover:shadow" // Ensuring the image is rounded
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        className="object-cover absolute inset-0 rounded-lg hover:shadow"
       />
       {/* Background overlay on hover */}
       <div

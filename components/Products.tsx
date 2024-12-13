@@ -6,13 +6,13 @@ import Loading from "@/components/Loading";
 const LazyCard = React.lazy(() => import("@/components/Card"));
 
 type Product = {
-  $id: string; 
+  $id: string;
   id: string;
   name: string;
   price: number;
   description: string;
   category: string;
-  sizesAvailable: string[]; 
+  sizesAvailable: string[];
   images: string[];
 };
 
@@ -34,17 +34,19 @@ const Products: React.FC<ProductsProps> = ({ products, onClick }) => {
     <div className="flex flex-col items-center h-full" onClick={onClick}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Suspense fallback={<Loading />}>
-          {visibleProducts.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial="hidden"
-              animate="visible"
-              variants={cardVariants}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <LazyCard product={product} />
-            </motion.div>
-          ))}
+          {visibleProducts
+            ? visibleProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial="hidden"
+                  animate="visible"
+                  variants={cardVariants}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <LazyCard product={product} />
+                </motion.div>
+              ))
+            : null}
         </Suspense>
       </div>
 

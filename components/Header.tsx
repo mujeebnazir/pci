@@ -64,11 +64,12 @@ const Header: React.FC = () => {
                 alt="logo"
                 width={100}
                 height={100}
-                className="scale-125 md:scale-150 hover:scale-[1.35] md:hover:scale-160 transition cursor-pointer"
+                className="h-auto w-auto scale-125 md:scale-150 hover:scale-[1.35] md:hover:scale-160 transition cursor-pointer"
+                priority
               />
             </Link>
           </div>
-          
+
           {/* Mobile Icons */}
           <div className="flex md:hidden items-center space-x-4">
             <div className="relative cursor-pointer" onClick={handleCartClick}>

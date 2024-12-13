@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronRight } from "lucide-react";
@@ -6,33 +7,30 @@ import Link from "next/link";
 
 const LuxuryHeroSection = () => {
   const { scrollY } = useScroll();
-  
+
   const y = useTransform(scrollY, [0, 300], [0, -100]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 300], [1, 0.8]);
   const imageY = useTransform(scrollY, [0, 300], [0, 50]);
 
   return (
-    <motion.div 
+    <motion.div
       style={{ y, opacity }}
       className="flex flex-col md:flex-row items-center min-h-screen w-full pt-32 md:pt-40 pb-16 px-4 md:px-10 bg-gradient-to-b from-gray-50 to-white"
     >
       {/* Left Side: Content */}
-      <motion.div 
+      <motion.div
         style={{ scale }}
         className="w-full md:w-1/2 flex flex-col items-start justify-center space-y-8 md:pr-12"
       >
-        <motion.h1 
-          className="text-gray-900 text-4xl md:text-6xl font-bold leading-tight"
-        >
+        <motion.h1 className="text-gray-900 text-4xl md:text-6xl font-bold leading-tight">
           Luxury in Every Stitch,
           <br />
           Tradition in Every Thread.
         </motion.h1>
-        <motion.p 
-          className="text-gray-600 text-lg md:text-xl max-w-xl"
-        >
-          Discover timeless craftsmanship designed for modern elegance. Each piece tells a story of heritage and innovation.
+        <motion.p className="text-gray-600 text-lg md:text-xl max-w-xl">
+          Discover timeless craftsmanship designed for modern elegance. Each
+          piece tells a story of heritage and innovation.
         </motion.p>
         <motion.div>
           <Link href="/products">
@@ -45,7 +43,7 @@ const LuxuryHeroSection = () => {
       </motion.div>
 
       {/* Right Side: Image */}
-      <motion.div 
+      <motion.div
         style={{ y: imageY }}
         className="w-full md:w-1/2 h-[400px] md:h-[600px] relative mt-8 md:mt-0"
       >

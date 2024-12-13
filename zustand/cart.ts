@@ -52,7 +52,6 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const items = await CartItemService.getCartItems();
-      console.log("items from cart", items);
 
       if (!items || !Array.isArray(items)) {
         throw new Error("Failed to load cart items.");
@@ -132,8 +131,6 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   removeItem: async (id) => {
     try {
-      console.log("id", id);
-
       set({ isLoading: true, error: null });
       const success = await CartItemService.removeCartItem(id);
       if (success) {

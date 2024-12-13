@@ -1,6 +1,7 @@
+"use client";
 import { FocusCards } from "@/components/ui/focus-cards";
 
-const  CategorySection =()=> {
+const CategorySection = () => {
   const cards = [
     {
       title: "Shawls",
@@ -36,5 +37,5 @@ const  CategorySection =()=> {
       <FocusCards cards={cards} />
     </section>
   );
-}
+};
 export default CategorySection;
