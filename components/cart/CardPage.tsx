@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import CartItem from "./CartItem";
-import OrderSummary from "./OrderSummary";
 import { useCartStore } from "../../zustand/cart";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import OrderSummary from "./OrderSummary";
 
 const CartPage: React.FC = () => {
   const {
@@ -11,60 +12,82 @@ const CartPage: React.FC = () => {
     onDecrease,
     onIncrease,
     removeItem,
-    totalAmount,
-    totalMRP,
-    discountOnMRP,
-    deliveryFee,
   } = useCartStore((state) => state);
   const router = useRouter();
 
-  console.log("items", items);
+  // Calculate order summary values
+  const totalMRP = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  const discountOnMRP = totalMRP * 0.1; // 10% discount
+  const deliveryFee = totalMRP > 1000 ? 0 : 100; // Free delivery above ₹1000
+  const totalAmount = totalMRP - discountOnMRP + deliveryFee;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-6 w-[80%] mx-auto">
-      {/* Cart Items Section */}
-      <div className="flex-1 bg-gray-100 p-4 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Your Cart</h2>
-        <p className="text-gray-500 text-sm mb-2">
-          Total Items: <span className="font-semibold">{items.length}</span>
-        </p>
-        <div className="space-y-4 max-h-[35vh] overflow-y-auto hide-scrollbar">
-          {items.length > 0 ? (
-            items.map((item, index) => (
-              <CartItem
-                key={index + "dvnejv"}
-                item={item}
-                onRemove={() => removeItem(item.id || "")}
-                onIncrease={() => onIncrease(item.id || "")}
-                onDecrease={() => onDecrease(item.id || "")}
-              />
-            ))
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <p className="text-gray-600 text-xl font-semibold">Your Cart is Empty!</p>
-              <p className="text-gray-500 text-sm mt-2">Browse our products and add items to your cart.</p>
-              <a href="/shop" className="mt-4 bg-green-600 text-white py-2 px-6 rounded hover:bg-green-800">
-                Start Shopping
-              </a>
+    <div className="min-h-screen bg-gray-100 py-8 px-4 md:px-8 w-screen mt-16">
+      <div className="max-w-full ">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+          Shopping Cart
+        </h1>
+        
+        {items.length > 0 ? (
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Cart Items Section */}
+            <div className="w-full lg:w-3/5">
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto hide-scrollbar pr-2">
+                  {items.map((item, index) => (
+                    <CartItem
+                      key={index + "item"}
+                      item={item}
+                      onRemove={() => removeItem(item.id || "")}
+                      onIncrease={() => onIncrease(item.id || "")}
+                      onDecrease={() => onDecrease(item.id || "")}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Order Summary Section */}
-      {items.length > 0 && (
-        <div className="bg-gray-200 w-full lg:w-[40%] p-4 rounded-lg">
-          <OrderSummary
-            totalMRP={totalMRP}
-            discountOnMRP={discountOnMRP}
-            deliveryFee={deliveryFee}
-            totalAmount={totalAmount}
-          />
-          <button onClick={() => router.push("/check-out")} className="w-full hover:bg-green-800 bg-green-600 text-white py-2 mt-4">
-            Go to Checkout
-          </button>
-        </div>
-      )}
+            {/* Order Summary Section */}
+            <div className="w-full lg:w-2/5">
+              <div className="bg-white rounded-xl shadow-lg lg:sticky lg:top-8">
+                <OrderSummary
+                  totalMRP={totalMRP}
+                  discountOnMRP={discountOnMRP}
+                  deliveryFee={deliveryFee}
+                  totalAmount={totalAmount}
+                />
+                <div className="px-6 pb-6">
+                  <Button
+                    variant="default"
+                    onClick={() => router.push("/check-out")}
+                    className="w-full bg-black hover:bg-gray-800 text-white py-4 text-lg font-medium rounded-lg transition duration-200"
+                  >
+                    Proceed to Checkout
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                Your Cart is Empty
+              </h2>
+              <p className="text-gray-600 mb-8">
+                Looks like you haven't added anything to your cart yet. Explore our collection and find something you love!
+              </p>
+              <Button
+                variant="default"
+                onClick={() => router.push('/shop')}
+                className="bg-black hover:bg-gray-800 text-white px-8 py-3 text-lg font-medium rounded-lg transition duration-200"
+              >
+                Continue Shopping
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

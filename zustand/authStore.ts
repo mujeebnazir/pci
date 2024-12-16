@@ -32,6 +32,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
   signIn: async (email: string, password: string) => {
     const { session , account} = await AuthService.signIn(email, password);
+     localStorage.setItem("isLoggedIn", account.$id);
 
     if (session) {
       const user = await AuthService.getCurrentUser();
