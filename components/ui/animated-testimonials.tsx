@@ -45,7 +45,7 @@ export const AnimatedCollections = ({
   };
   return (
     <div className="max-w-sm md:max-w-4xl mx-auto antialiased font-sans px-4 md:px-8 lg:px-12 py-20">
-      <div className="relative grid grid-cols-1 md:grid-cols-2  gap-16 md:gap-20">
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-20">
         <div>
           <div className="relative h-72 w-full">
             <AnimatePresence>
@@ -64,7 +64,7 @@ export const AnimatedCollections = ({
                     z: isActive(index) ? 0 : -100,
                     rotate: isActive(index) ? 0 : randomRotateY(),
                     zIndex: isActive(index)
-                      ? 999
+                      ? 10 // Reduced from 999 to be lower than navbar's z-index of 100
                       : collections.length + 2 - index,
                     y: isActive(index) ? [0, -80, 0] : 0,
                   }}

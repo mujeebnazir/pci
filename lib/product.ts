@@ -1,5 +1,5 @@
 import client from "@/utils/appwrite";
-import { Account, Databases, ID, Storage, Query } from "appwrite";
+import { Databases, ID, Storage, Query } from "appwrite";
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
 const PRODUCT_COLLECTION_ID =

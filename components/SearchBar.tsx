@@ -38,7 +38,10 @@ const SearchBar = () => {
   return (
     <>
       {/* Search Form */}
-      <form className="relative w-[300px] md:w-[400px] mx-auto" onSubmit={handleSearchSubmit}>
+      <form
+        className="relative w-full md:w-[400px] mx-auto"
+        onSubmit={handleSearchSubmit}
+      >
         <input
           type="search"
           id="default-search"
@@ -98,7 +101,9 @@ const SearchBar = () => {
               !error &&
               searchQuery.trim() &&
               products.length === 0 && (
-                <p className="mt-4 text-center text-gray-600">No products found.</p>
+                <p className="mt-4 text-center text-gray-600">
+                  No products found.
+                </p>
               )}
 
             {/* Default State */}

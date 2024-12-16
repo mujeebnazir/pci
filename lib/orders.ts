@@ -4,7 +4,7 @@ import { Databases, ID , Query , Storage } from "appwrite";
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
 const ORDER_ITEMS_COLLECTION_ID =
   process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_ORDER_ITEMS ?? "";
-const BUCKET_ID = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID ?? "";
+
 export enum PaymentMode {
   COD = "COD",
   UPI = "UPI",

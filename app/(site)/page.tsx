@@ -22,6 +22,7 @@ import { useFetchNewlyAddedProducts } from "@/hooks/useNewlyAddedProducts";
 import useProducts from "@/hooks/useProducts";
 import Loading from "@/components/Loading";
 import LogoCarousel from "@/components/LogoCarousel";
+import KashmirEmbroidery from "@/components/KashmirEmbriodery";
 
 export default function Home() {
   const { newProducts, loading } = useFetchNewlyAddedProducts();
@@ -33,10 +34,10 @@ export default function Home() {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const session = await auth.checkUserStatus();
+        await auth.checkUserStatus();
         await store.initializeCart();
       } catch (err: any) {
-        throw new Error("Error initializing cart");
+        throw new Error("Error initializing cart", err);
       }
     };
 
@@ -55,49 +56,48 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full items-center justify-center rounded-md bg-white">
-      {/* 1. Hero Section - First impression and main value proposition */}
+      {/* Hero Section: Main banner and call-to-action */}
       <section className="w-full">
         <HeroContent />
       </section>
 
-      {/* 2. Logo Carousel - Establish credibility with brand associations */}
+      {/* Logo Carousel: Displays partner or brand logos */}
       <LogoCarousel />
 
-      {/* 3. Why Choose Us Banner - Highlight unique value propositions */}
-      <WhyPCIBanner />
-
-      {/* 4. Category Section - Help users navigate product categories */}
-      <CategorySection />
-
-      {/* 5. New Arrivals - Showcase fresh inventory */}
+      {/* New Arrivals Section: Latest products */}
       <section className="flex flex-col justify-center items-center pt-12 w-full">
-        <span className="font-semibold text-2xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
+        <h2 className="font-semibold text-2xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
           New Arrivals
-        </span>
+        </h2>
         <div className="py-4 w-full">
           {isLoading ? <Loading /> : <Products products={newProducts as any} />}
         </div>
       </section>
-      {/*category section */}
+
+      {/* Category Section: Product navigation by categories */}
       <CategorySection />
-      <OurTopCollections />
-      {/* Best Sellers Section */}
+
+      {/* Best Sellers Section: Popular products */}
       <section className="flex flex-col justify-center items-center pt-12 w-full bg-white">
-        <span className="font-semibold text-3xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
+        <h2 className="font-semibold text-3xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
           Best Sellers
-        </span>
+        </h2>
         <div className="py-4 w-full">
           {isLoading ? <Loading /> : <Products products={products} />}
         </div>
       </section>
 
-      {/* 7. Our Top Collections - Curated product collections */}
-      <OurTopCollections />
-
-      {/* 8. Gift Section - Special promotions and gift ideas */}
+      {/* Special Offers & Gifts Section */}
       <GiftsSection />
+       
+       <OurTopCollections/>
+      {/* Kashmir Embroidery Section: Custom content */}
+      <KashmirEmbroidery />
 
-      {/* 9. Visual Showcase - End with engaging visuals */}
+      {/* Trust Indicators Section: Why choose us */}
+      <WhyPCIBanner />
+
+      {/* Showcase Section: Visual product gallery */}
       <section className="flex flex-col justify-center items-center w-full m-10">
         <div className="min-h-screen flex items-center justify-center">
           <Showcase images={images} />

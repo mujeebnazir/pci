@@ -3,18 +3,20 @@ import FiltersSidebar from "./FiltersSidesbar";
 import Products from "../Products";
 
 type Product = {
+  $id: string;
   id: string;
   name: string;
   description: string;
   images: string[];
   price: number;
-  discountedPrice: number;
-  rating: number;
-  size?: string;
+  category: string;
+  sizesAvailable: string[];
+  // Optional fields
+  discountedPrice?: number;
+  rating?: number;
   color?: string;
   quantity?: number;
-  isOnSale: boolean;
-  category?: string;
+  isOnSale?: boolean;
   subcategory?: string;
 };
 

@@ -109,7 +109,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
   const [quantity, setQuantity] = useState<number>(1);
   const increaseQuantity = () => setQuantity(quantity + 1);
   const decreaseQuantity = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
-  const [select, setSelect] = useState<string>(product.sizesAvailable[0]);
+  const [select, setSelect] = useState<string>(product.sizesAvailable?.[0] || "");
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     const user = await checkUserStatus();
@@ -158,7 +158,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
       <div className="flex flex-col space-y-2">
         <span className="font-normal text-sm text-black">Size</span>
         <div className="flex flex-row flex-wrap gap-2">
-          {product.sizesAvailable.map((size, index) => (
+          {product?.sizesAvailable?.map((size, index) => (
             <div
               onClick={() => setSelect(size)}
               key={index}
