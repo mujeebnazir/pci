@@ -1,9 +1,9 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdShoppingCart } from "react-icons/md";
 import { CgMenu } from "react-icons/cg";
 import { IoMdClose } from "react-icons/io";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next-nprogress-bar';
 import { useCartStore } from "../zustand/cart";
 import SearchBar from "./SearchBar";
 import Navbar from "./Navbar";

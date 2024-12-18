@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next-nprogress-bar';
 import React from "react";
 import { useCartStore } from "@/zustand/cart";
 

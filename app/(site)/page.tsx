@@ -95,7 +95,7 @@ export default function Home() {
       <KashmirEmbroidery />
 
       {/* Trust Indicators Section: Why choose us */}
-      <WhyPCIBanner />
+      {/* <WhyPCIBanner /> */}
 
       {/* Showcase Section: Visual product gallery */}
       <section className="flex flex-col justify-center items-center w-full m-10">

@@ -1,44 +1,88 @@
-"use client";
 import ProductPage from "@/components/ProductPage";
-import { useParams } from "next/navigation";
-import React from "react";
-import useGetProduct from "@/hooks/usegetProduct";
-import Loading from "@/components/Loading";
+import ProductService from "@/lib/product";
+import { Metadata } from "next";
 
-interface Product {
-  $id: string;
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  category: string;
-  sizesAvailable: string[];
-  images: string[];
+enum Size {
+  L = "L",
+  M = "M",
+  SM = "SM",
+  XL = "XL",
+  XXL = "XXL",
 }
 
-const ProductPageContainer = () => {
-  const { productid } = useParams();
-  const normalizedProductId = Array.isArray(productid) ? productid[0] : productid;
-  const { product } = useGetProduct(normalizedProductId ?? "") as { product: Product | null };
-  // const normalizedProductId = Array.isArray(productid)
-  //   ? productid[0]
-  //   : productid;
+interface Product {
+  $id?: string;
+  id?: string;
+  name: string;
+  description: string;
+  price: number;
+  sizesAvailable: Size[];
+  itemsCount: number;
+  category?: string;
+  images?: string[];
+  createdAt?: string;
+}
 
-  // // Pass the normalized ID directly to the hook
-  // const { product } = useGetProduct(normalizedProductId ?? "");
+// Define the page component props using Next.js types
+export interface GenerateMetadataProps {
+  params: { productid: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+// Server-side component rendering the product
+export default async function ProductPageContainer({
+  params,
+}: {
+  params: { productid: string };
+}) {
+  const { productid } = await params;
+
+  const product = await ProductService.getProduct(productid);
+
+  if (!product) {
+    return (
+      <p className="text-center text-lg font-medium text-red-500">
+        Product not found.
+      </p>
+    );
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen py-10 px-4">
-      <div className="w-full max-w-6xl">
-        {product ? (
-          <ProductPage product={product} />
-        ) : (
-          <p className="text-center text-lg font-medium">
-            <Loading />
-          </p>
-        )}
-      </div>
+    <div className="mt-10 ">
+      <ProductPage product={product as any} />
     </div>
   );
-};
+}
 
-export default ProductPageContainer;
+// Generate metadata dynamically for SEO
+export async function generateMetadata({
+  params,
+}: GenerateMetadataProps): Promise<Metadata> {
+  const { productid } = await params;
+  const product = await ProductService.getProduct(productid);
+
+  if (!product) {
+    return {
+      title: "Product not found",
+      description: "The product you are looking for does not exist.",
+    };
+  }
+
+  return {
+    title: product.name,
+    description: product.description,
+    keywords: product.category ? [product.category] : undefined,
+    openGraph: {
+      images: product?.images || [],
+    },
+  };
+}
+
+// Generate static parameters for dynamic routes
+export async function generateStaticParams() {
+  const products = await ProductService.getProducts();
+
+  return products.products.map((product: Product) => ({
+    productid: product.id,
+  }));
+}
