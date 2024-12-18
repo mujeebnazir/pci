@@ -22,7 +22,7 @@ const Model: React.FC<ModelProps> = ({
 }) => {
   const modalClasses =
     type === "quickview"
-      ? "fixed hide-scrollbar border overflow-hidden border-gray-200 bg-white inset-0 md:top-[4.25%] md:left-[10.5%] w-full h-full md:w-[80%] md:h-[95%] shadow-lg bg-white p-6 focus:outline-none custom-scrollbar overflow-auto rounded-md z-50"
+      ? "fixed hide-scrollbar border overflow-hidden border-gray-200 bg-white inset-0 md:top-[4.25%] md:left-[10.5%] w-full h-full md:w-[80%] md:h-[95%] shadow-lg bg-white p-6 focus:outline-none custom-scrollbar overflow-auto rounded-md z-50 "
       : "fixed border border-gray-200 top-[50%] left-[50%] max-h-full h-full md:h-auto md:max-h-[85vh] w-full md:w-[90vw] md:max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-md bg-white p-6 focus:outline-none custom-scrollbar overflow-auto z-50";
 
   return (

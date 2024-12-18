@@ -207,21 +207,29 @@ class ProductService {
     }
   }
 
-  async getProduct(id: string): Promise<any> {
+  async getProduct(productid: string): Promise<Product | null> {
     try {
-      if (!id) {
+      if (!productid) {
         console.log("Product id is required");
       }
       const response = await this.databases.getDocument(
         DATABASE_ID,
         PRODUCT_COLLECTION_ID,
-        id
+        productid
       );
 
       const images = await response?.images?.map((imageId: string) =>
         this.storage.getFileView(BUCKET_ID, imageId)
       );
-      return { ...response, images };
+      return {
+        ...response,
+        images,
+        name: response.name,
+        description: response.description,
+        price: response.price,
+        sizesAvailable: response.sizesAvailable,
+        itemsCount: response.itemsCount,
+      };
     } catch (error) {
       console.error("Error fetching product:", error);
       return Promise.reject(error);

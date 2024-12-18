@@ -1,3 +1,4 @@
+"use client"
 import { useState, useEffect } from "react";
 import ProductService from "@/lib/product"; // Adjust the import based on your file structure
 
@@ -9,6 +10,7 @@ interface Product {
   sizesAvailable: string[];
   category: string;
   images: string[];
+  createdAt: string;
 }
 
 interface UseFetchNewlyAddedProductsResult {
