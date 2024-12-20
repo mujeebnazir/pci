@@ -78,7 +78,7 @@ export default function Home() {
       <CategorySection />
 
       {/* Best Sellers Section: Popular products */}
-      <section className="flex flex-col justify-center items-center pt-12 w-full bg-white">
+      <section id="bestSellers" className="flex flex-col justify-center items-center pt-12 w-full bg-white">
         <h2 className="font-semibold text-3xl md:text-4xl text-center mb-8 text-gray-800 uppercase">
           Best Sellers
         </h2>
@@ -98,7 +98,7 @@ export default function Home() {
       {/* <WhyPCIBanner /> */}
 
       {/* Showcase Section: Visual product gallery */}
-      <section className="flex flex-col justify-center items-center w-full m-10">
+      <section  className=" flex flex-col justify-center items-center w-full m-10">
         <div className="min-h-screen flex items-center justify-center">
           <Showcase images={images} />
         </div>

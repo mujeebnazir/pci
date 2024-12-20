@@ -6,10 +6,10 @@ import { VscAccount, VscGift } from "react-icons/vsc";
 
 const Page = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16 sm:mt-20">
-        <Tabs defaultValue="account" className="w-full space-y-8 ">
-          <TabsList className="flex w-full justify-between max-w-lg mx-auto rounded-xl  shadow-lg p-2 space-x-4 ">
+    <div className="min-h-screen bg-gray-50 mt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16 sm:mt-20 ">
+        <Tabs defaultValue="account" className="w-full space-y-8  ">
+          <TabsList className="flex w-full justify-between max-w-lg mx-auto rounded-xl mt-10 shadow-lg p-2 space-x-4 ">
             <TabsTrigger 
               value="account" 
               className="flex-1 flex items-center justify-center gap-3 px-7  text-base font-medium rounded-lg hover:bg-gray-50 transition-colors "

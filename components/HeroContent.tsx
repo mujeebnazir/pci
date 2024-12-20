@@ -3,11 +3,17 @@ import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+
 
 const LuxuryHeroSection = () => {
   const { scrollY } = useScroll();
+  const scrolltoBestSellers = () =>{
+    const element = document.getElementById("bestSellers");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
 
+  }
   const y = useTransform(scrollY, [0, 300], [0, -50]);
 
   return (
@@ -27,17 +33,12 @@ const LuxuryHeroSection = () => {
           piece tells a story of heritage and innovation.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <Link href="/products">
-            <button className="group bg-black text-white font-medium py-4 px-8 rounded-full hover:bg-gray-800 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-500 flex items-center justify-center">
+            <button onClick={scrolltoBestSellers} className="group bg-black text-white font-medium py-4 px-8 rounded-full hover:bg-gray-800 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-500 flex items-center justify-center">
               Shop Collection
               <ChevronRight className="inline-block ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
-          </Link>
-          <Link href="/about">
-            <button className="bg-transparent border-2 border-black text-black font-medium py-4 px-8 rounded-full hover:bg-black hover:text-white transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-500">
-              Learn More
-            </button>
-          </Link>
+          
+         
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import client from "@/utils/appwrite";
-import { Databases, ID , Query , Storage } from "appwrite";
+import { Databases, ID, Query, Storage } from "appwrite";
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
 const ORDER_ITEMS_COLLECTION_ID =
@@ -79,7 +79,35 @@ class OrderService {
         ID.unique(),
         payload
       );
-     
+      const parsedProductDetails = payload.productDetails?.map((item) => JSON.parse(item));
+      const emailPayload = {
+        firstName: payload.firstName,
+        orderId: response.$id,
+        orderDate: new Date().toLocaleDateString(),
+        items: parsedProductDetails?.map((item) => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          price: item.product.price,
+        })),
+        totalAmount: parsedProductDetails?.reduce(
+          (sum: number, item: any) => sum + item.product.price * item.quantity,
+          0
+        ),
+        customerEmail: payload.email,
+      };
+
+      try {
+        const emailResponse = await fetch("/api/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(emailPayload),
+        });
+        console.log("emailResponse", emailResponse);
+      } catch (error: any) {
+        console.error("Error sending email:", error.message);
+      }
 
       return response;
     } catch (error: any) {
@@ -96,9 +124,9 @@ class OrderService {
         ORDER_ITEMS_COLLECTION_ID,
         [Query.equal("user", userID)]
       );
-      
+
       console.log("response", response);
-  
+
       // Parse productDetails and map it correctly
       const userOrders = response.documents.map((document: any) => {
         const productDetails = document.productDetails.map((product: any) =>
@@ -126,10 +154,8 @@ class OrderService {
             price: product.product.price,
             quantity: product.quantity,
             totalPrice: product.product.price * product.quantity,
-            images: product.product.images
-            
+            images: product.product.images,
           })),
-          
         };
       });
       console.log("userOrders", userOrders);
@@ -139,17 +165,16 @@ class OrderService {
       throw error;
     }
   }
-  
-  
+
   async getAllOrdersForAdmin() {
     try {
       const response = await this.databases.listDocuments(
         DATABASE_ID,
         ORDER_ITEMS_COLLECTION_ID
       );
-      
+
       console.log("response", response);
-  
+
       const adminOrders = response.documents.map((document: any) => {
         const productDetails = document.productDetails.map((product: any) =>
           JSON.parse(product)
@@ -181,8 +206,8 @@ class OrderService {
             price: product.product.price,
             quantity: product.quantity,
             totalPrice: product.product.price * product.quantity,
-            images: product.product.images
-          }))
+            images: product.product.images,
+          })),
         };
       });
       console.log("adminOrders", adminOrders);
@@ -195,7 +220,12 @@ class OrderService {
 
   async updateOrderStatus(orderId: string, status: string) {
     try {
-      const response = await this.databases.updateDocument(DATABASE_ID, ORDER_ITEMS_COLLECTION_ID, orderId, { status });
+      const response = await this.databases.updateDocument(
+        DATABASE_ID,
+        ORDER_ITEMS_COLLECTION_ID,
+        orderId,
+        { status }
+      );
       return response;
     } catch (error: any) {
       console.error("Error updating order status:", error.message);
@@ -203,9 +233,7 @@ class OrderService {
     }
   }
 
-  async getAdminInsights(){
-    
-  }
+  async getAdminInsights() {}
 }
 
 export default new OrderService();
