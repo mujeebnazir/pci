@@ -32,8 +32,7 @@ import useAuthStore from "@/zustand/authStore";
 import OrderService from "@/lib/orders";
 import { PaymentMode, Status } from "@/lib/orders";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
-
+import Confetti from "./triggerConfetti";
 const CheckoutStep = ({ step, currentStep, title, icon: Icon }: any) => (
   <div
     className={`flex items-center ${
@@ -127,7 +126,7 @@ const Checkout = () => {
     useCartStore((state) => state);
   const { session } = useAuthStore((state) => state);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const validateForm = () => {
     if (step === 1) {
@@ -171,11 +170,7 @@ const Checkout = () => {
     }
     return true;
   };
-  console.log("items", items);
-  const cartItemIds = items
-    .map((item) => item.id)
-    .filter((id): id is string => id !== undefined);
-  console.log("cartItemIds", cartItemIds);
+
   const handlePlaceOrder = async () => {
     if (!session?.$id || !session?.cartId) {
       toast.error("Please login to place order");
@@ -212,9 +207,9 @@ const Checkout = () => {
       const response = await OrderService.createOrderItem(orderData);
 
       toast.success("Order placed successfully!");
-      // removeItem(cartItemIds);
       removeItems(cartItemIds);
       console.log("response", response);
+      setShowConfetti(true);
     } catch (error: any) {
       toast.error(error.message || "Error placing order");
     } finally {
@@ -245,6 +240,7 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 lg:p-8 mt-5">
+      {showConfetti && <Confetti />}
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <div className="flex items-center justify-center gap-2 mb-6">
@@ -546,20 +542,13 @@ const Checkout = () => {
                 disabled={items.length === 0 || isLoading}
               >
                 {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <span className="animate-spin">⚪</span>
-                    Loading...
+                  <div className="flex items-center justify-center">
+                    <span>Placing Order...</span>
                   </div>
                 ) : step === 3 ? (
-                  <>
-                    Place Order
-                    <Package2 size={16} className="ml-2" />
-                  </>
+                  <>Place Order</>
                 ) : (
-                  <>
-                    Continue
-                    <ChevronRight size={16} className="ml-2" />
-                  </>
+                  <>Continue</>
                 )}
               </Button>
             </div>

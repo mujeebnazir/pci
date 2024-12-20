@@ -7,7 +7,7 @@ const CategorySection = () => {
   console.log(categories)
   const cards = categories.map(category => ({
     title: category.name,
-    src: "/shawls.jpg", // Using default image since we don't have category images
+    src: "/shawls.jpg", 
   }));
 
   return (

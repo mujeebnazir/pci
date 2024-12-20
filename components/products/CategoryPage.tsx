@@ -35,8 +35,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
   applyFilter,
   products,
 }) => (
-  <div className="flex flex-col  gap-6 p-6">
-    <FiltersSidebar filters={filters} applyFilter={applyFilter} />
+  <div className="flex flex-col  gap-6 p-6 mt-14">
+    {/* <FiltersSidebar filters={filters} applyFilter={applyFilter} /> */}
     <Products products={products} />
   </div>
 );
