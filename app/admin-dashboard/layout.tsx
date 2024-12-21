@@ -2,7 +2,6 @@
 
 import React from "react";
 import { AppSidebar } from "@/components/admin/AppSidebar";
-import ProtectedRoute from "@/providers/ProtectedRoute";
 
 export default function AdminLayout({
   children,

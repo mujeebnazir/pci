@@ -33,10 +33,10 @@ export default function Home() {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const session = await auth.checkUserStatus();
+        await auth.checkUserStatus();
         await store.initializeCart();
       } catch (err: any) {
-        throw new Error("Error initializing cart");
+        throw new Error("Error initializing cart", err);
       }
     };
 
