@@ -40,13 +40,13 @@ const CheckoutStep = ({ step, currentStep, title, icon: Icon }: any) => (
     }`}
   >
     <div
-      className={`w-8 h-8 rounded-full flex items-center justify-center
+      className={`w-4 h-4 rounded-full flex items-center justify-center
       ${currentStep >= step ? "bg-primary text-white" : "bg-gray-100"}`}
     >
-      {currentStep > step ? <CheckCircle2 size={16} /> : <Icon size={16} />}
+      {currentStep > step ? <CheckCircle2 size={10} /> : <Icon size={10} />}
     </div>
-    <span className="ml-2 font-medium">{title}</span>
-    {step < 3 && <ChevronRight className="mx-2" size={16} />}
+    <span className="ml-1 font-normal">{title}</span>
+    {step < 3 && <ChevronRight className="mx-2" size={10} />}
   </div>
 );
 
@@ -239,7 +239,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 lg:p-8 mt-5">
+    <div className="min-h-screen bg-gray-50 p-2 lg:p-4 mt-20">
       {showConfetti && <Confetti />}
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
@@ -247,7 +247,7 @@ const Checkout = () => {
             <ShoppingBag className="text-primary" size={28} />
             <h1 className="text-3xl font-bold text-center">Checkout</h1>
           </div>
-          <div className="flex justify-center items-center mb-4 ">
+          <div className="flex justify-center items-center mb-2 ">
             <CheckoutStep
               step={1}
               currentStep={step}

@@ -13,9 +13,9 @@ const UserProfile = () => {
   const authModel = useAuthModel();
   const { isLoggedIn, logout, checkUserStatus } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
-
+ 
   useEffect(() => {
-    checkUserStatus(); // Fetch user status on component mount
+    checkUserStatus(); 
   }, []);
 
   const handleLogout = async () => {
@@ -36,8 +36,8 @@ const UserProfile = () => {
     >
       <button type="button">
         <BsPersonCircle
-          size={24}
-          className="shadow rounded-full hover:shadow-md transition cursor-pointer scale-100 hover:scale-110 md:w-6 md:h-6 w-5 h-5"
+          size={30}
+          className="shadow rounded-full hover:shadow-md transition cursor-pointer scale-100 hover:scale-110 md:w-6 md:h-6 w-7 h-7"
           color="black"
         />
       </button>

@@ -1,9 +1,9 @@
 import client from "@/utils/appwrite";
 import { Databases, ID, Query, Storage } from "appwrite";
-
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
 const ORDER_ITEMS_COLLECTION_ID =
   process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_ORDER_ITEMS ?? "";
+
 
 export enum PaymentMode {
   COD = "COD",
@@ -15,7 +15,7 @@ export enum Status {
   DELIVERED = "DELIVERED",
   CANCELLED = "CANCELLED",
   PROCESSING = "PROCESSING",
-  ON_THE_WAY = "ON THE WAY",
+  SHIPPED = "SHIPPED",
 }
 
 interface OrderItem {
@@ -79,7 +79,9 @@ class OrderService {
         ID.unique(),
         payload
       );
-      const parsedProductDetails = payload.productDetails?.map((item) => JSON.parse(item));
+      const parsedProductDetails = payload.productDetails?.map((item) =>
+        JSON.parse(item)
+      );
       const emailPayload = {
         firstName: payload.firstName,
         orderId: response.$id,
@@ -186,6 +188,10 @@ class OrderService {
           createdAt: document.$createdAt,
           firstName: document.firstName,
           lastName: document.lastName,
+          phoneNumber: document.phoneNumber,
+          email: document.email,
+          state: document.state,
+          country: document.country,
           streetAddress: document.streetAddress,
           city: document.city,
           postalCode: document.postalCode,
@@ -210,10 +216,39 @@ class OrderService {
           })),
         };
       });
+
       console.log("adminOrders", adminOrders);
       return adminOrders;
     } catch (error: any) {
       console.error("Error fetching all orders:", error.message);
+      throw error;
+    }
+  }
+
+  async getAdminProductInsights() {
+     // get product insights for admin with category 
+    try {
+      const response = await this.databases.listDocuments(
+        DATABASE_ID,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_PRODUCT as string,
+      );
+      const products = response.documents;
+      const productInsights = products.reduce((acc: any, product: any) => {
+        if (!acc[product.category]) {
+          acc[product.category] = {
+            totalProducts: 0,
+            totalQuantity: 0,
+            totalRevenue: 0,
+          };
+        }
+        acc[product.category].totalProducts += 1;
+        acc[product.category].totalQuantity += product.quantity;
+        acc[product.category].totalRevenue += product.price;
+        return acc;
+      }, {});
+      return productInsights;
+    } catch (error: any) {
+      console.error("Error fetching product insights:", error.message);
       throw error;
     }
   }
@@ -233,7 +268,46 @@ class OrderService {
     }
   }
 
-  async getAdminInsights() {}
+  async getAdminInsights() {
+    try {
+       // Fetch documents related to the user Total Users count Total Orders count  Pending Deliveries
+      const response = await this.databases.listDocuments(
+        DATABASE_ID,
+        ORDER_ITEMS_COLLECTION_ID,
+      );
+      const totalOrders = response.documents.length;
+      const pendingOrders = response.documents.filter((order: any) => order.status === Status.PENDING).length;
+      const deliveredOrders = response.documents.filter((order: any) => order.status === Status.DELIVERED).length;
+      const cancelledOrders = response.documents.filter((order: any) => order.status === Status.CANCELLED).length;
+      const processingOrders = response.documents.filter((order: any) => order.status === Status.PROCESSING).length;
+      const onTheWayOrders = response.documents.filter((order: any) => order.status === Status.SHIPPED).length;
+      const totalRevenue = response.documents.reduce((acc: number, order: any) => {
+        return acc + order.totalPrice;  
+      }, 0);
+      // Total Users from appwrite
+      const users = await this.databases.listDocuments(
+        DATABASE_ID,
+        process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_USER as string,
+      )
+      const totalUsers = users.documents.length;
+      // return data object
+      const data = {
+        totalOrders,
+        pendingOrders,
+        deliveredOrders,
+        cancelledOrders,
+        processingOrders,
+        onTheWayOrders,
+        totalUsers,
+        totalRevenue
+      }
+      return data;
+      
+    } catch (error) {
+      
+    }
+  }
+
 }
 
 export default new OrderService();

@@ -33,7 +33,7 @@ type ProductCardProps = {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const router = useRouter();
   const quickModel = useQuickModel();
-  const { checkUserStatus } = useAuthStore();
+  const { checkUserStatus , session } = useAuthStore();
   const authModel = useAuthModel();
   const addToCart = useCartStore((state) => state.addItem);
 
@@ -41,8 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     router.push(`/product/${product?.id}`);
   };
   const handleAddToCart = async (e: React.MouseEvent) => {
-    const user = await checkUserStatus();
-    if (!user) {
+    if (!session) {
       toast.error("Please login to add items to cart");
       return authModel.onOpen();
     }

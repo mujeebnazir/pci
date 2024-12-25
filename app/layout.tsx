@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import ModelProvider from "@/providers/ModelProvider";
-
 import LayoutWrapper from "@/components/LayoutWrapper";
 
 const geistSans = localFont({
@@ -94,6 +93,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body

@@ -1,3 +1,4 @@
+"use client";
 import ViewOrders from '@/components/admin/viewOrders/main'
 import React from 'react'
 
