@@ -1,20 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import useSearchProducts from "@/hooks/useSearchProducts";
-import Products from "./Products";
 import Loading from "./Loading";
+import { motion } from "framer-motion";
+const LazyCard = React.lazy(() => import("@/components/Card"));
 
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { products, loadingProducts, error } = useSearchProducts({
-    query: searchQuery,
-    currentPage,
-  });
+  const { products, loadingProducts, error, hasMore, loadMore } =
+    useSearchProducts({ query: searchQuery });
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -22,7 +20,7 @@ const SearchBar = () => {
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setCurrentPage(1);
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -30,9 +28,14 @@ const SearchBar = () => {
     setSearchQuery(""); // Clear search query on modal close
   };
 
-  const handleProductClick = () => {
-    setIsModalOpen(false); // Close modal when product is clicked
-    setSearchQuery(""); // Clear the search query
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  const handleLoadMore = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    loadMore();
   };
 
   return (
@@ -62,8 +65,14 @@ const SearchBar = () => {
 
       {/* Modal Overlay */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center pt-16 w-screen animate-fadeIn overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl w-[90%] max-w-4xl p-6 relative overflow-y-auto transform animate-slideDown">
+        <div
+          className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center pt-16 w-full  animate-fadeIn overflow-y-auto"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl w-[90%] max-w-4xl p-6 relative overflow-y-auto transform animate-slideDown"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Close Button */}
             <button
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-900 transition-colors"
@@ -93,24 +102,34 @@ const SearchBar = () => {
 
             {/* Search Results */}
             {!loadingProducts && !error && products.length > 0 && (
-              <Products products={products} onClick={handleProductClick} />
-            )}
+              <div className="flex flex-col items-center h-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                  <Suspense fallback={<Loading />}>
+                    {products.map((product, index) => (
+                      <motion.div
+                        key={product.id}
+                        initial="hidden"
+                        animate="visible"
+                        variants={cardVariants}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                      >
+                        <LazyCard product={product} />
+                      </motion.div>
+                    ))}
+                  </Suspense>
+                </div>
 
-            {/* No Results */}
-            {!loadingProducts &&
-              !error &&
-              searchQuery.trim() &&
-              products.length === 0 && (
-                <p className="mt-4 text-center text-gray-600">
-                  No products found.
-                </p>
-              )}
-
-            {/* Default State */}
-            {!loadingProducts && !error && !searchQuery.trim() && (
-              <p className="mt-4 text-center text-gray-500">
-                Start typing to search for products.
-              </p>
+                {hasMore && (
+                  <motion.button
+                    onClick={handleLoadMore}
+                    className="px-4 py-2 border bg-black text-sm font-semibold text-white rounded hover:scale-105 transition"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Load More
+                  </motion.button>
+                )}
+              </div>
             )}
           </div>
         </div>

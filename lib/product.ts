@@ -284,7 +284,7 @@ class ProductService {
     }
   }
 
-  async searchProducts(query: string, limit: number = 30, offset: number = 0) {
+  async searchProducts(query: string, limit: number = 10, offset: number = 0) {
     try {
       const filters = [Query.search("name", query)];
 

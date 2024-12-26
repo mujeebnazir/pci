@@ -200,7 +200,7 @@ const Orders = () => {
                       className="flex flex-col sm:flex-row bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 hover:bg-white hover:shadow-sm transition-all duration-200 border border-gray-100"
                     >
                       <div className="flex-shrink-0 mx-auto sm:mx-0 relative w-24 h-24 sm:w-28 sm:h-28">
-                        {/* <Image
+                        <Image
                           src={item?.images[0] || ""}
                           alt={item.name}
                           fill
@@ -208,7 +208,7 @@ const Orders = () => {
                           className="object-cover rounded-lg shadow-sm"
                           loading="lazy"
                           quality={80}
-                        /> */}
+                        />
                       </div>
                       <div className="sm:ml-4 md:ml-6 flex-1 mt-3 sm:mt-0">
                         <div className="flex flex-col sm:flex-row sm:justify-between">

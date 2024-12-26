@@ -12,7 +12,7 @@ export default function AdminLayout({
   return (
     <div className="flex h-screen ">
       <ProtectedRoute>
-      <AppSidebar>{children}</AppSidebar>
+        <AppSidebar>{children}</AppSidebar>
       </ProtectedRoute>
     </div>
   );

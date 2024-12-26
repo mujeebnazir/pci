@@ -18,7 +18,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default :"Phalgham Cottage Industries - Shop Authentic Kashmiri Products",
+    default: "Phalgham Cottage Industries - Shop Authentic Kashmiri Products",
     template: "%s | Phalgham Cottage Industries",
   },
   description:

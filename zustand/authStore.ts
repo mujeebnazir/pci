@@ -5,8 +5,14 @@ import AuthService from "@/lib/auth";
 interface AuthState {
   isLoggedIn: boolean;
   session: object | null | any;
-  signUp: (email: string, password: string) => Promise<{ success: boolean; message?: string; }>;
-  signIn: (email: string, password: string) => Promise<{ session: any; account: any }>;
+  signUp: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; message?: string }>;
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{ session: any; account: any }>;
   logout: () => Promise<boolean>;
   checkUserStatus: () => Promise<object | null>;
 }
@@ -18,7 +24,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
   signUp: async (email: string, password: string) => {
     const result = await AuthService.signUp(email, password);
-  
+
     if (result.success) {
       const user = await AuthService.getCurrentUser();
       set({ isLoggedIn: true, session: user });
@@ -27,12 +33,10 @@ const useAuthStore = create<AuthState>((set) => ({
       set({ isLoggedIn: false, session: null });
       return { success: false, message: result.message, session: null };
     }
-},
-  
+  },
 
   signIn: async (email: string, password: string) => {
-    const { session , account} = await AuthService.signIn(email, password);
-     localStorage.setItem("isLoggedIn", account.$id);
+    const { session, account } = await AuthService.signIn(email, password);
 
     if (session) {
       const user = await AuthService.getCurrentUser();
@@ -40,7 +44,7 @@ const useAuthStore = create<AuthState>((set) => ({
     } else {
       set({ isLoggedIn: false, session: null });
     }
-    return {session, account};
+    return { session, account };
   },
 
   logout: async () => {

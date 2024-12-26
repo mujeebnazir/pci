@@ -7,9 +7,9 @@ import { useCartStore } from "@/zustand/cart";
 import useAuthStore from "@/zustand/authStore";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { useRouter } from 'next-nprogress-bar';
+import { useRouter } from "next-nprogress-bar";
 interface Product {
-  $id?: string;
+  $id: string;
   id: string;
   name: string;
   price: number;
@@ -107,33 +107,40 @@ const ProductGallery: React.FC<{ images: string[] }> = ({ images }) => {
 };
 
 const ProductInfo: React.FC<{ product: Product }> = ({ product }) => {
-  const { session} = useAuthStore();
+  const { session } = useAuthStore();
   const authModel = useAuthModel();
   const router = useRouter();
   const addToCart = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState<number>(1);
+  const [addToCartLoading, setAddToCartLoading] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>(
     product.sizesAvailable?.[0] || ""
   );
 
   const handleAddToCart = async () => {
+    setAddToCartLoading(true);
+
     if (!session) {
       toast.error("Please login to add items to cart");
       return authModel.onOpen();
     }
 
+    const cartitem = {
+      product: {
+        ...product,
+        $id: product.$id,
+        category: product.category,
+        sizesAvailable: product.sizesAvailable,
+      },
+      quantity: 1,
+    };
+    console.log("productfromProductPage", product);
+    console.log("cartitemfromProductPage", cartitem);
+
     try {
-      await addToCart({
-        product: {
-          ...product,
-          $id: product.id,
-          category: product.category,
-          sizesAvailable: product.sizesAvailable,
-        },
-        quantity,
-      });
+      await addToCart(cartitem);
       toast.success("Item added to cart");
-      router.push("/cart");
+      setAddToCartLoading(false);
     } catch (error) {
       toast.error("Error adding item to cart");
     }
@@ -218,7 +225,11 @@ const ProductInfo: React.FC<{ product: Product }> = ({ product }) => {
             hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 
             focus:ring-gray-900 transition-colors"
         >
-          Add to Cart
+          {addToCartLoading ? (
+            <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+          ) : (
+            "Add to Cart"
+          )}
         </button>
       </div>
     </div>

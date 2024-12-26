@@ -1,6 +1,6 @@
 // app/not-found.js
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 export default function NotFound() {
   return (
@@ -24,7 +24,8 @@ export default function NotFound() {
 
         {/* Subtitle */}
         <p className="text-lg md:text-2xl font-light text-gray-700 mb-6">
-          It seems you've hit a dead end. But don’t worry, we’re here to help you find your way!
+          It seems you've hit a dead end. But don&apos;t worry, we&apos;re here
+          to help you find your way!
         </p>
 
         {/* Redirect to Home */}

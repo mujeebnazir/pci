@@ -41,7 +41,7 @@ const Profile: React.FC = () => {
     if (isEditing) {
       setIsSaving(true);
       try {
-        const response = await UserService.updateProfile(
+        await UserService.updateProfile(
           personalInfo.fullname,
           personalInfo.phone,
           personalInfo.address

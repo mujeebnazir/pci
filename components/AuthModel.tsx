@@ -84,6 +84,7 @@ const AuthModel = () => {
       if (result.success) {
         toast.success("Signup successful");
         router.push("/");
+        onClose();
       } else {
         setError(
           result.message || "Signup failed. Please check your credentials."
