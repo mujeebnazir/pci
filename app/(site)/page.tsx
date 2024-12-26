@@ -46,10 +46,10 @@ export default function Home() {
 
   const images = useMemo(
     () => [
-      { src: "/images/i1.webp", alt: "Product 1" },
-      { src: "/images/i2.webp", alt: "Product 2" },
-      { src: "/images/i3.webp", alt: "Product 3" },
-      { src: "/images/i4.webp", alt: "Product 4" },
+      { src: "/images/i1.jpeg", alt: "Kashmiri Embroidered Shawl" },
+      { src: "/images/i2.jpeg", alt: "Kashmiri Embroidered Kurta" },
+      { src: "/images/i3.jpeg", alt: "Kashmiri Embroidered Stole" },
+      { src: "/images/i4.jpeg", alt: "Kashmiri Embroidered Top" },
     ],
     []
   );
