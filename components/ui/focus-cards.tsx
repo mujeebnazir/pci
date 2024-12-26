@@ -1,73 +1,118 @@
-import Image from "next/image";
-import React, { useState } from "react";
-import { cn } from "@/lib/utils";
+"use client";
+import React from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-export const Card = React.memo(
-  ({
-    card,
-    index,
-    hovered,
-    setHovered,
-  }: {
-    card: any;
-    index: number;
-    hovered: number | null;
-    setHovered: React.Dispatch<React.SetStateAction<number | null>>;
-  }) => (
+interface Category {
+  name: string;
+  id: string;
+}
+
+interface CardData {
+  title: string;
+  href: string;
+  gradient: string;
+}
+
+interface CardProps {
+  card: CardData;
+  index: number;
+  hovered: number | null;
+  setHovered: (index: number | null) => void;
+}
+
+interface FocusCardsProps {
+  cards: CardData[];
+}
+
+const Card = ({ card, index, hovered, setHovered }: CardProps) => {
+  const isHovered = hovered === index;
+
+  return (
     <div
       onMouseEnter={() => setHovered(index)}
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        "relative overflow-hidden h-[300px] sm:h-60 md:h-[550px] w-full transition-all duration-300 ease-out mx-1 sm:mx-4 rounded-lg",
-        hovered !== null && hovered !== index && "scale-97"
+        "relative overflow-hidden h-[300px] sm:h-60 md:h-[550px] w-full",
+        "transition-all duration-500 ease-out mx-1 sm:mx-4 rounded-xl",
+        "border border-gray-200",
+        hovered !== null && !isHovered && "scale-95 opacity-60"
       )}
     >
-      <Image
-        src={card.src}
-        alt={card.title}
-        fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        className="object-cover absolute inset-0 rounded-lg hover:shadow"
-      />
-      {/* Background overlay on hover */}
+      {/* Animated background */}
       <div
         className={cn(
-          "absolute inset-0 bg-black/50 flex items-end py-8 px-4 transition-opacity duration-300",
-          hovered === index ? "opacity-100" : "opacity-0"
+          "absolute inset-0 transition-all duration-500",
+          "bg-gradient-to-br",
+          card.gradient,
+          isHovered && "scale-110"
         )}
       />
-      {/* Title as a centered button */}
-      <div className="absolute inset-0 flex items-center justify-center">
+
+      {/* Animated pattern overlay */}
+      <div
+        className={cn(
+          "absolute inset-0 opacity-10",
+          "bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.3)_1px,transparent_1px)]",
+          "bg-[length:24px_24px]",
+          "transition-transform duration-700",
+          isHovered && "scale-150 rotate-12"
+        )}
+      />
+
+      {/* Content container */}
+      <div className="relative h-full w-full flex items-center justify-center p-6">
+        {/* Category title */}
         <Link
-          href="/category/Women"
+          href={card.href}
           className={cn(
-            "text-sm sm:text-base md:text-xl font-light text-gray-800 bg-white py-1 sm:py-2 px-3 sm:px-6 transform transition duration-300 ease-in-out",
-            hovered === index && "scale-105 shadow"
+            "text-xl sm:text-2xl md:text-3xl font-medium",
+            "text-white text-center",
+            "py-4 px-8",
+            "backdrop-blur-sm rounded-xl",
+            "transform transition-all duration-500",
+            "border border-white/20",
+            "hover:scale-105",
+            "group",
+            isHovered && "bg-black/20"
           )}
         >
-          {card.title}
+          <span className="block transition-transform group-hover:-translate-y-1">
+            {card.title}
+          </span>
+          {/* Animated underline */}
+          <div
+            className={cn(
+              "h-px bg-white/50 mx-auto mt-2",
+              "transition-all duration-500 ease-out",
+              "w-0 group-hover:w-full"
+            )}
+          />
         </Link>
       </div>
+
+      {/* Corner accents */}
+      {isHovered && (
+        <>
+          <div className="absolute top-4 left-4 w-8 h-8 border-l border-t border-white/30 transition-all duration-300" />
+          <div className="absolute bottom-4 right-4 w-8 h-8 border-r border-b border-white/30 transition-all duration-300" />
+        </>
+      )}
     </div>
-  )
-);
-
-Card.displayName = "Card";
-
-type Card = {
-  title: string;
-  src: string;
+  );
 };
 
-export function FocusCards({ cards }: { cards: Card[] }) {
+const MemoizedCard = React.memo(Card);
+
+export function FocusCards({ cards }: FocusCardsProps) {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 w-full px-2 sm:px-8 md:px-10">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 w-full px-2 sm:px-8 md:px-10">
       {cards.map((card, index) => (
-        <Card
-          key={card.title}
+        <MemoizedCard
+          key={`${card.title}-${index}`}
           card={card}
           index={index}
           hovered={hovered}
