@@ -1,13 +1,10 @@
-"use client";
-
+import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import ModelProvider from "@/providers/ModelProvider";
-import { usePathname } from "next/navigation";
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,17 +17,83 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+export const metadata: Metadata = {
+  title: {
+    default: "Phalgham Cottage Industries - Shop Authentic Kashmiri Products",
+    template: "%s | Phalgham Cottage Industries",
+  },
+  description:
+    "Discover authentic Kashmiri products including Pashmina shawls, suits, and traditional handicrafts. Each piece tells a story of heritage and craftsmanship.",
+  keywords: [
+    "Phalgham Cottage Industries",
+    "Phalgham",
+    "Phalgham Cottage",
+    "Kashmiri shawls",
+    "Pashmina shawls",
+    "Kashmiri suits",
+    "Kashmir handicrafts",
+    "traditional Kashmiri art",
+    "authentic Pashmina",
+    "handmade Kashmiri products",
+    "buy Kashmiri shawls online",
+    "Kashmiri embroidery",
+    "handmade Kashmiri products",
+    "pure Pashmina",
+    "Kashmir wool products",
+    "traditional Kashmiri clothing",
+    "Kashmiri fashion",
+    "artisan crafts Kashmir",
+  ],
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Pashmina Craft India - Authentic Kashmiri Craftsmanship",
+    description:
+      "Shop premium Kashmiri products including Pashmina shawls, suits and traditional handicrafts. Experience authentic craftsmanship.",
+    url: process.env.NEXT_PUBLIC_APP_URL,
+    type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_APP_URL}/seoimage.png`,
+        width: 1200,
+        height: 630,
+        alt: "Pashmina Craft India Banner",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pashmina Craft India - Authentic Kashmiri Craftsmanship",
+    description:
+      "Shop premium Kashmiri products including Pashmina shawls, suits and traditional handicrafts.",
+    images: [`${process.env.NEXT_PUBLIC_APP_URL}/seoimage.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "google-site-verification-code",
+  },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_APP_URL,
+  },
+};
+
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const location = usePathname();
-
-  const noLayoutRoutes = ["/admin", "/admin/*"];
-  const shouldRenderLayout = !noLayoutRoutes.some((route) =>
-    location.startsWith(route)
-  );
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -38,29 +101,8 @@ export default function RootLayout({
       >
         <Toaster />
         <ModelProvider />
-        <div className="flex flex-col min-h-screen">
-          <div className="bg-gray-200 z-20 ">
-            {shouldRenderLayout && <Header />}
-          </div>
 
-          {children}
-          <ProgressBar
-            height="5px"
-            color="#000000"
-            options={{ showSpinner: false }}
-            shallowRouting
-          />
-          {shouldRenderLayout && (
-            <Footer
-              socialLinks={{
-                instagram: "https://instagram.com/yourpage",
-                facebook: "https://facebook.com/yourpage",
-                youtube: "https://youtube.com/yourpage",
-                pinterest: "https://pinterest.com/yourpage",
-              }}
-            />
-          )}
-        </div>
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

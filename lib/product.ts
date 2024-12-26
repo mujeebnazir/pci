@@ -1,5 +1,5 @@
 import client from "@/utils/appwrite";
-import { Account, Databases, ID, Storage, Query } from "appwrite";
+import { Databases, ID, Storage, Query } from "appwrite";
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID ?? "";
 const PRODUCT_COLLECTION_ID =
@@ -207,21 +207,29 @@ class ProductService {
     }
   }
 
-  async getProduct(id: string): Promise<any> {
+  async getProduct(productid: string): Promise<Product | null> {
     try {
-      if (!id) {
+      if (!productid) {
         console.log("Product id is required");
       }
       const response = await this.databases.getDocument(
         DATABASE_ID,
         PRODUCT_COLLECTION_ID,
-        id
+        productid
       );
 
       const images = await response?.images?.map((imageId: string) =>
         this.storage.getFileView(BUCKET_ID, imageId)
       );
-      return { ...response, images };
+      return {
+        ...response,
+        images,
+        name: response.name,
+        description: response.description,
+        price: response.price,
+        sizesAvailable: response.sizesAvailable,
+        itemsCount: response.itemsCount,
+      };
     } catch (error) {
       console.error("Error fetching product:", error);
       return Promise.reject(error);
@@ -276,7 +284,7 @@ class ProductService {
     }
   }
 
-  async searchProducts(query: string, limit: number = 30, offset: number = 0) {
+  async searchProducts(query: string, limit: number = 10, offset: number = 0) {
     try {
       const filters = [Query.search("name", query)];
 

@@ -1,8 +1,9 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdShoppingCart } from "react-icons/md";
 import { CgMenu } from "react-icons/cg";
-import { useRouter } from "next/navigation";
+import { IoMdClose } from "react-icons/io";
+import { useRouter } from 'next-nprogress-bar';
 import { useCartStore } from "../zustand/cart";
 import SearchBar from "./SearchBar";
 import Navbar from "./Navbar";
@@ -47,7 +48,7 @@ const Header: React.FC = () => {
     router.push("/cart");
   };
   return (
-    <div className="fixed top-0 w-full flex flex-col bg-white items-center mx-auto pt-2 shadow shadow-stone-300 z-1000">
+    <div className="fixed top-0 w-full flex flex-col bg-white items-center mx-auto pt-2 shadow shadow-stone-300 z-[100]">
       <div className="container px-4 flex flex-col md:flex-row items-center justify-between w-full pb-2 space-y-4 md:space-y-0">
         {/* Left Section: Logo and Menu Icon */}
         <div className="flex items-center w-full md:w-auto justify-between md:justify-start">
@@ -56,15 +57,19 @@ const Header: React.FC = () => {
               className="lg:hidden flex items-center mr-4 text-black"
               onClick={toggleSidebar}
             >
-              <CgMenu size={28} color="black" className="cursor-pointer" />
+              <CgMenu
+                size={28}
+                color="black"
+                className="cursor-pointer hover:scale-110 transition-transform"
+              />
             </div>
-            <Link href="/" className="flex items-center justify-center ">
+            <Link href="/" className="flex items-center justify-center">
               <Image
                 src="/logo.svg"
                 alt="logo"
-                width={100}
-                height={100}
-                className="h-auto w-auto scale-125 md:scale-150 hover:scale-[1.35] md:hover:scale-160 transition cursor-pointer"
+                width={80}
+                height={80}
+                className="h-[50px] w-auto md:h-auto md:w-auto cursor-pointer mt-3"
                 priority
               />
             </Link>
@@ -89,7 +94,7 @@ const Header: React.FC = () => {
         </div>
 
         {/* Center Section: Search Bar */}
-        <div className="w-full md:w-auto md:flex-1 md:max-w-xl px-4">
+        <div className="w-full px-0 md:px-4 md:w-auto md:flex-1 md:max-w-xl">
           <SearchBar />
         </div>
 
@@ -128,27 +133,74 @@ const Header: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Sidebar for Mobile View */}
+      {/* Modernized Sidebar for Mobile View */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <motion.div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={toggleSidebar}
-          >
+          <>
+            {/* Backdrop with blur effect */}
             <motion.div
-              className="fixed top-0 left-0 w-3/4 h-full bg-white p-6 shadow-lg z-50"
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[150]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={toggleSidebar}
+            />
+
+            {/* Sidebar Panel */}
+            <motion.div
+              className="fixed top-0 left-0 w-[85%] max-w-[400px] h-full bg-white shadow-2xl z-[200]"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              onClick={(e) => e.stopPropagation()}
+              transition={{
+                type: "spring",
+                damping: 25,
+                stiffness: 300,
+              }}
             >
-              <Navbar />
+              <div className="flex flex-col h-full">
+                {/* Header Section */}
+                <div className="relative p-6 border-b border-gray-100">
+                  <button
+                    onClick={toggleSidebar}
+                    className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                    aria-label="Close menu"
+                  >
+                    <IoMdClose size={24} className="text-gray-600" />
+                  </button>
+
+                  <Link
+                    href="/"
+                    className="flex justify-center"
+                    onClick={toggleSidebar}
+                  >
+                    <Image
+                      src="/logo.svg"
+                      alt="logo"
+                      width={120}
+                      height={120}
+                      className="w-auto h-auto"
+                      priority
+                    />
+                  </Link>
+                </div>
+
+                {/* Navigation Section */}
+                <div className="flex-1 overflow-y-auto py-6 px-4">
+                  <nav className="space-y-2">
+                    <Navbar />
+                  </nav>
+                </div>
+
+                {/* Footer Section */}
+                <div className="p-6 border-t border-gray-100">
+                  <div className="flex items-center justify-center space-x-4">
+                    <UserProfile />
+                  </div>
+                </div>
+              </div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

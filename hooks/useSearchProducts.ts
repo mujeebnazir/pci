@@ -4,27 +4,32 @@ import ProductService from "@/lib/product";
 const useSearchProducts = ({
   query = "",
   pageSize = 10,
-  currentPage = 1,
 }: {
   query?: string;
   pageSize?: number;
-  currentPage?: number;
 } = {}) => {
   const [products, setProducts] = useState<any[]>([]);
   const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [currentOffset, setCurrentOffset] = useState<number>(0);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (offset: number) => {
     setLoadingProducts(true);
     setError(null);
+
     try {
-      const offset = (currentPage - 1) * pageSize;
       const response = await ProductService.searchProducts(
         query,
         pageSize,
         offset
       );
-      setProducts(response.products);
+
+      // Append new products to the existing list
+      setProducts((prevProducts) => [...prevProducts, ...response.products]);
+
+      // Determine if there are more products to load
+      setHasMore(response.products.length === pageSize);
     } catch (error) {
       console.error("Error fetching products:", error);
       setError(error as Error);
@@ -33,15 +38,31 @@ const useSearchProducts = ({
     }
   };
 
+  // Fetch products on initial load or query change
   useEffect(() => {
-    fetchProducts();
-  }, [query, currentPage, pageSize]);
+    // Reset on new query
+    setProducts([]);
+    setHasMore(true);
+    setCurrentOffset(0);
+
+    fetchProducts(0);
+  }, [query]);
+
+  // Load more products
+  const loadMore = () => {
+    if (!loadingProducts && hasMore) {
+      const newOffset = currentOffset + pageSize;
+      setCurrentOffset(newOffset);
+      fetchProducts(newOffset);
+    }
+  };
 
   return {
     products,
     loadingProducts,
     error,
-    setProducts,
+    hasMore,
+    loadMore,
   };
 };
 

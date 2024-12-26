@@ -13,7 +13,7 @@ type Product = {
   images: string[]; // Add this property
 };
 
-type CartItemData = {
+export type CartItemData = {
   id?: string;
   cartId?: string;
   product: Product; // This must match the updated `Product` type

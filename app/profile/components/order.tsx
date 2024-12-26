@@ -31,19 +31,24 @@ const Orders = () => {
   const { session } = useAuthStore((state: any) => state);
 
   // Memoize the fetchUserOrders function
-  const fetchUserOrders = useMemo(() => async () => {
-    try {
-      if (session?.$id) {
-        const orderItems = await OrderService.getOrderItemsByUserID(session.$id);
-        console.log("orderItems from frontend ", orderItems);
-        return orderItems;
+  const fetchUserOrders = useMemo(
+    () => async () => {
+      try {
+        if (session?.$id) {
+          const orderItems = await OrderService.getOrderItemsByUserID(
+            session.$id
+          );
+          console.log("orderItems from frontend ", orderItems);
+          return orderItems;
+        }
+        return [];
+      } catch (error) {
+        console.error("Error fetching user orders:", error);
+        return [];
       }
-      return [];
-    } catch (error) {
-      console.error("Error fetching user orders:", error);
-      return [];
-    }
-  }, [session?.$id]);
+    },
+    [session?.$id]
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -70,22 +75,25 @@ const Orders = () => {
   }, [fetchUserOrders]);
 
   // Memoize the status color function
-  const getStatusColor = useMemo(() => (status: string) => {
-    switch (status.toUpperCase()) {
-      case "DELIVERED":
-        return "bg-emerald-100 text-emerald-800 border border-emerald-200";
-      case "PROCESSING":
-        return "bg-sky-100 text-sky-800 border border-sky-200";
-      case "PENDING":
-        return "bg-amber-100 text-amber-800 border border-amber-200";
-      case "CANCELLED":
-        return "bg-rose-100 text-rose-800 border border-rose-200";
-      case "ON THE WAY":
-        return "bg-indigo-100 text-indigo-800 border border-indigo-200";
-      default:
-        return "bg-slate-100 text-slate-800 border border-slate-200";
-    }
-  }, []);
+  const getStatusColor = useMemo(
+    () => (status: string) => {
+      switch (status.toUpperCase()) {
+        case "DELIVERED":
+          return "bg-emerald-100 text-emerald-800 border border-emerald-200";
+        case "PROCESSING":
+          return "bg-sky-100 text-sky-800 border border-sky-200";
+        case "PENDING":
+          return "bg-amber-100 text-amber-800 border border-amber-200";
+        case "CANCELLED":
+          return "bg-rose-100 text-rose-800 border border-rose-200";
+        case "ON THE WAY":
+          return "bg-indigo-100 text-indigo-800 border border-indigo-200";
+        default:
+          return "bg-slate-100 text-slate-800 border border-slate-200";
+      }
+    },
+    []
+  );
 
   if (isLoading) {
     return (
@@ -193,7 +201,7 @@ const Orders = () => {
                     >
                       <div className="flex-shrink-0 mx-auto sm:mx-0 relative w-24 h-24 sm:w-28 sm:h-28">
                         <Image
-                          src={item.images[0]}
+                          src={item?.images[0] || ""}
                           alt={item.name}
                           fill
                           sizes="(max-width: 640px) 96px, 112px"

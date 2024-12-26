@@ -1,5 +1,5 @@
-import { useRouter } from "next/navigation";
-import React from "react";
+import { useRouter } from "next-nprogress-bar";
+import React, { useState } from "react";
 import { useCartStore } from "@/zustand/cart";
 
 import toast from "react-hot-toast";
@@ -36,11 +36,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { checkUserStatus } = useAuthStore();
   const authModel = useAuthModel();
   const addToCart = useCartStore((state) => state.addItem);
-
+  const [addToCartLoading, setAddToCartLoading] = useState(false);
   const handleClick = () => {
     router.push(`/product/${product?.id}`);
   };
   const handleAddToCart = async (e: React.MouseEvent) => {
+    setAddToCartLoading(true);
     const user = await checkUserStatus();
     if (!user) {
       toast.error("Please login to add items to cart");
@@ -56,8 +57,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       },
       quantity: 1,
     };
+    console.log("productfromProductcart", product);
+    console.log("cartitemfromProductcart", cartitem);
     try {
       await addToCart(cartitem);
+      setAddToCartLoading(false);
       toast.success("Item added to cart");
     } catch (error) {
       toast.error("Error adding item to cart");
@@ -103,7 +107,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         onClick={handleAddToCart}
         className="w-full border-2 border-black px-5 py-2 mt-2 text-center text-sm font-semibold text-black transition transform hover:shadow-lg hover:scale-105"
       >
-        Add to Cart
+        {addToCartLoading ? (
+          <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+        ) : (
+          "Add to Cart"
+        )}
       </button>
       <div className="self-start px-2 mt-2">
         <h5 className="text-lg font-semibold font-sans uppercase tracking-tight text-black">

@@ -44,10 +44,10 @@ class CartItemService {
 
   async addCartItem(product: Product, quantity: number = 1): Promise<object> {
     try {
-      console.log("product", product.id);
+      console.log("product", product.$id);
 
       const user = await this.getCurrentUser();
-     
+
       const cartItem = await this.databases.createDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
         process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID_CART_ITEM!,
@@ -55,11 +55,24 @@ class CartItemService {
         {
           cart: user.cartId,
           quantity,
-          product: product.id,
+          product: product.id ? product.id : product.$id,
         }
       );
-      console.log("cartItem", cartItem);  
-      return cartItem;
+      console.log("cartItem", cartItem);
+      return {
+        id: cartItem.$id,
+        cartId: cartItem.cart,
+        product: {
+          ...cartItem.product,
+          images: cartItem.product.images.map((imageId: string) =>
+            this.storage.getFileView(
+              process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID!,
+              imageId
+            )
+          ),
+        },
+        quantity: cartItem.quantity,
+      } as CartItem;
     } catch (error: any) {
       console.error("Error adding cart item:", error.message);
       throw new Error("Error adding cart item");
@@ -105,7 +118,10 @@ class CartItemService {
             id
           );
         } catch (error: any) {
-          console.error(`Error removing cart item with ID ${id}:`, error.message);
+          console.error(
+            `Error removing cart item with ID ${id}:`,
+            error.message
+          );
           throw new Error(`Error removing cart item with ID ${id}`);
         }
       })

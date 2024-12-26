@@ -3,6 +3,7 @@
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Collection = {
@@ -10,6 +11,8 @@ type Collection = {
   description: string;
   price: string;
   src: string;
+  href: string;
+
 };
 
 export const AnimatedCollections = ({
@@ -45,13 +48,13 @@ export const AnimatedCollections = ({
   };
   return (
     <div className="max-w-sm md:max-w-4xl mx-auto antialiased font-sans px-4 md:px-8 lg:px-12 py-20">
-      <div className="relative grid grid-cols-1 md:grid-cols-2  gap-16 md:gap-20">
+      <div className="relative grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-20">
         <div>
-          <div className="relative h-72 w-full">
+          <div className="relative h-64 md:h-72 w-full">
             <AnimatePresence>
               {collections.map((collection, index) => (
                 <motion.div
-                  key={collection.src}
+                  key={collection?.src}
                   initial={{
                     opacity: 0,
                     scale: 0.9,
@@ -64,7 +67,7 @@ export const AnimatedCollections = ({
                     z: isActive(index) ? 0 : -100,
                     rotate: isActive(index) ? 0 : randomRotateY(),
                     zIndex: isActive(index)
-                      ? 999
+                      ? 10 // Reduced from 999 to be lower than navbar's z-index of 100
                       : collections.length + 2 - index,
                     y: isActive(index) ? [0, -80, 0] : 0,
                   }}
@@ -80,6 +83,7 @@ export const AnimatedCollections = ({
                   }}
                   className="absolute inset-0 origin-bottom"
                 >
+                  <Link href={collection?.href}>
                   <Image
                     src={collection.src}
                     alt={collection.title}
@@ -88,12 +92,13 @@ export const AnimatedCollections = ({
                     draggable={false}
                     className="h-full w-full rounded-3xl object-cover object-center"
                   />
+                  </Link>
                 </motion.div>
               ))}
             </AnimatePresence>
           </div>
         </div>
-        <div className="flex justify-between flex-col py-4">
+        <div className="flex justify-between flex-col py-2">
           <motion.div
             key={active}
             initial={{
@@ -113,14 +118,14 @@ export const AnimatedCollections = ({
               ease: "easeInOut",
             }}
           >
-            <h3 className="text-2xl font-bold dark:text-white text-black mb-3">
-              {collections[active].title}
+            <h3 className="text-xl md:text-2xl font-bold dark:text-white text-black mb-2">
+              {collections[active]?.title}
             </h3>
             <p className="text-sm text-gray-900 font-bold dark:text-neutral-500">
-              {collections[active].price}
+              {collections[active]?.price}
             </p>
-            <motion.p className="text-lg text-gray-700 mt-8 dark:text-neutral-300">
-              {collections[active].description.split(" ").map((word, index) => (
+            <motion.p className="text-lg text-gray-700 mt-3 dark:text-neutral-300">
+              {collections[active]?.description.split(" ").map((word, index) => (
                 <motion.span
                   key={index}
                   initial={{
@@ -145,7 +150,7 @@ export const AnimatedCollections = ({
               ))}
             </motion.p>
           </motion.div>
-          <div className="flex gap-4 pt-12 md:pt-0">
+          <div className="flex gap-4 pt-8 md:pt-0">
             <button
               onClick={handlePrev}
               className="h-7 w-7 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center group/button"
