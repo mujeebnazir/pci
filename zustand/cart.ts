@@ -106,7 +106,6 @@ export const useCartStore = create<CartState>((set, get) => ({
           ...get().items,
           success as CartItemData,
         ];
-        console.log("updatedItems", updatedItems);
 
         const totalMRP = updatedItems.reduce(
           (sum, item) => sum + item.product.price * item.quantity,

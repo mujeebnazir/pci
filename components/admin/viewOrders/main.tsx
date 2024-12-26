@@ -22,7 +22,10 @@ import {
 } from "@/components/ui/select";
 import OrderService from "@/lib/orders";
 import { toast } from "react-hot-toast";
-
+import InvoiceComponent from "@/components/InvoiceComponent";
+import { sendAdminEmail } from "@/utils/sendAdminEmail";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 interface OrderItem {
   name: string;
   category: string;
@@ -70,19 +73,88 @@ const ViewOrders = () => {
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     setIsUpdating(orderId);
+
     try {
       await OrderService.updateOrderStatus(orderId, newStatus);
-      setOrders(
-        orders.map((order) =>
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
           order.orderId === orderId ? { ...order, status: newStatus } : order
         )
       );
+
+      if (newStatus === "SHIPPED") {
+        await generateAndSendInvoice(orderId);
+      }
+
       toast.success("Order status updated successfully");
     } catch (error) {
       toast.error("Failed to update order status");
       console.error("Error updating order status:", error);
     } finally {
       setIsUpdating(null);
+    }
+  };
+
+  const generateAndSendInvoice = async (orderId: string) => {
+    const order = orders.find((order) => order.orderId === orderId);
+    if (!order) return;
+    const invoiceElement = document.getElementById(`invoice-${orderId}`);
+    if (!invoiceElement) return;
+
+    try {
+      // Make element visible for capture
+      invoiceElement.style.display = "block";
+
+      // Generate PDF
+      const canvas = await html2canvas(invoiceElement, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const pdf = new jsPDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      });
+
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        0,
+        0,
+        imgWidth,
+        imgHeight,
+        undefined,
+        "FAST"
+      );
+
+      pdf.save(`invoice-${orderId}.pdf`);
+
+      //send email from admin
+      try {
+        const response = await fetch("/api/send-admin-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order: order,
+          }),
+        });
+        console.log("response", response);
+      } catch (error) {
+        console.error("Error sending invoice email:", error);
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      throw error;
+    } finally {
+      invoiceElement.style.display = "none";
     }
   };
 
@@ -117,6 +189,15 @@ const ViewOrders = () => {
         <p className="mt-2 text-sm sm:text-lg text-gray-600">
           Track and update customer orders efficiently.
         </p>
+        {orders.map((order) => (
+          <div
+            key={order.orderId}
+            id={`invoice-${order.orderId}`}
+            style={{ display: "none" }}
+          >
+            <InvoiceComponent orderData={order} />
+          </div>
+        ))}
       </div>
 
       <div className="h-[60vh] overflow-y-auto hide-scrollbar bg-white rounded-lg shadow">
@@ -166,7 +247,7 @@ const ViewOrders = () => {
                           ? "bg-blue-100 text-blue-800"
                           : order.status === "CANCELLED"
                           ? "bg-red-100 text-red-800"
-                          : order.status === "ON THE WAY"
+                          : order.status === "SHIPPED"
                           ? "bg-yellow-100 text-yellow-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
@@ -190,7 +271,7 @@ const ViewOrders = () => {
                           <SelectItem value="DELIVERED">Delivered</SelectItem>
                           <SelectItem value="PROCESSING">Processing</SelectItem>
                           <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                          <SelectItem value="ON THE WAY">On the Way</SelectItem>
+                          <SelectItem value="SHIPPED">SHIPPED</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>

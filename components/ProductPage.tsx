@@ -7,7 +7,7 @@ import { useCartStore } from "@/zustand/cart";
 import useAuthStore from "@/zustand/authStore";
 import toast from "react-hot-toast";
 import Image from "next/image";
-
+import { useRouter } from "next-nprogress-bar";
 interface Product {
   $id: string;
   id: string;
@@ -107,8 +107,9 @@ const ProductGallery: React.FC<{ images: string[] }> = ({ images }) => {
 };
 
 const ProductInfo: React.FC<{ product: Product }> = ({ product }) => {
-  const { checkUserStatus, session } = useAuthStore();
+  const { session } = useAuthStore();
   const authModel = useAuthModel();
+  const router = useRouter();
   const addToCart = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState<number>(1);
   const [addToCartLoading, setAddToCartLoading] = useState(false);

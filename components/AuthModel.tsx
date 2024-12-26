@@ -65,6 +65,20 @@ const AuthModel = () => {
     setError("");
 
     try {
+      //AECJET VALIDATION
+      const response = await fetch("/api/arcjet",{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
+      if (!response.ok){
+        const data = await response.json();
+        setError(data.message);
+        toast.error(data.message);
+        return;
+      }
       const result = await signUp(email, password);
 
       if (result.success) {
